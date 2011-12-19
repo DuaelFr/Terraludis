@@ -16,10 +16,20 @@ function og_field_info() {
       'description' => t('This field stores groups associated with the content.'),
       'default_widget' => OG_AUDIENCE_WIDGET,
       'default_formatter' => 'og_list_default',
-      // We do not expose the field as entity property, but we provide a
-      // separate property making use of the membership entities instead.
+      'property_callbacks' => array('og_field_property_callback'),
     ),
   );
+}
+
+/**
+ * OG audience field metadata callback.
+ */
+function og_field_property_callback(&$info, $entity_type, $field, $instance, $field_type) {
+  // Set the property type to "group".
+  $field_type['property_type'] = 'group';
+
+  // Then apply the default.
+  entity_metadata_field_default_property_callback($info, $entity_type, $field, $instance, $field_type);
 }
 
 /**
@@ -303,6 +313,30 @@ function og_field_widget_form(&$form, &$form_state, $field, $instance, $langcode
 }
 
 /**
+ * Default value function for OG audience fields.
+ *
+ * Set the default from the URL context. This works even if the widget is
+ * not shown, e.g. due to restricted field access.
+ *
+ * @see og_og_fields_info()
+ */
+function og_field_audience_default_value($entity_type, $entity, $field, $instance, $langcode) {
+  $gids = og_get_context_by_url();
+  if (!$gids) {
+    return;
+  }
+  $items = array();
+  $groups = og_load_multiple($gids);
+  foreach ($groups as $gid => $group) {
+    // Check access to group.
+    if ($group->access()) {
+      $items[] = array('gid' => $gid);
+    }
+  }
+  return $items;
+}
+
+/**
  * Implements hook_field_is_empty().
  */
 function og_field_is_empty($item, $field) {
@@ -398,24 +432,30 @@ function og_field_attach_form($entity_type, $entity, &$form, $form_state, $langc
 }
 
 /**
- * Validate handler; Re-add hidden selected gids if exist.
+ * Validate handler; Re-add hidden selected group IDs if exist.
  */
 function og_field_widget_form_validate($form, &$form_state) {
-  if (!empty($form[OG_AUDIENCE_FIELD][LANGUAGE_NONE]['#hidden_selected_gids']) && $gids = $form[OG_AUDIENCE_FIELD][LANGUAGE_NONE]['#hidden_selected_gids']) {
-    // Rebuild the form state values.
+  if (empty($form[OG_AUDIENCE_FIELD][LANGUAGE_NONE]['#hidden_selected_gids'])) {
+    return;
+  }
+
+  // The hidden group IDs.
+  $gids = $form[OG_AUDIENCE_FIELD][LANGUAGE_NONE]['#hidden_selected_gids'];
+  if (!empty($form_state['values'][OG_AUDIENCE_FIELD][LANGUAGE_NONE])) {
     foreach ($form_state['values'][OG_AUDIENCE_FIELD][LANGUAGE_NONE] as $key => $value) {
+      // Add the selected group IDs.
       $gids[$value['gid']] = $value['gid'];
     }
-
-    $delta = 0;
-    $value = array();
-    foreach ($gids as $gid) {
-      $value[LANGUAGE_NONE][$delta]['gid'] = $gid;
-      ++$delta;
-    }
-    // Set the new values.
-    form_set_value($form[OG_AUDIENCE_FIELD], $value, $form_state);
   }
+
+  $delta = 0;
+  $value = array();
+  foreach ($gids as $gid) {
+    $value[LANGUAGE_NONE][$delta]['gid'] = $gid;
+    ++$delta;
+  }
+  // Set the new values.
+  form_set_value($form[OG_AUDIENCE_FIELD], $value, $form_state);
 }
 
 /**

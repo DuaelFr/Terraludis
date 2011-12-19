@@ -88,9 +88,9 @@ function og_ui_confirm_subscribe($form, &$form_state, $group, $account) {
 
   // Add group membership form.
   // TODO: We need to associate a group membership with group?
-  $name = OG_MEMBERSHIP_TYPE_DEFAULT;
-  $form['membership_type'] = array('#type' => 'value', '#value' => $name);
-  $dummy_entity = og_membership_create(0, 'user', 0, array('name' => $name));
+  $type = OG_MEMBERSHIP_TYPE_DEFAULT;
+  $form['membership_type'] = array('#type' => 'value', '#value' => $type);
+  $dummy_entity = og_membership_create(0, 'user', 0, array('type' => $type));
   $form['membership_fields'] = array(
     '#prefix' => '<div id="og-ui-membership-type">',
     '#suffix' => '</div>',
@@ -119,7 +119,7 @@ function og_ui_confirm_subscribe_validate($form, &$form_state) {
   if (!empty($form_state['values']['membership_fields'])) {
     $dummy_entity = (object) $form_state['values']['membership_fields'];
   }
-  $dummy_entity->name = $form_state['values']['membership_type'];
+  $dummy_entity->type = $form_state['values']['membership_type'];
 
   field_attach_form_validate('og_membership', $dummy_entity, $form['membership_fields'], $form_state);
 }

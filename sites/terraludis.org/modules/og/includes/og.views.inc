@@ -68,7 +68,7 @@ class OgViewsController extends EntityDefaultViewsController {
 }
 
 /**
- * "Group membership" entity Views definitions.
+ * "OG membership" entity Views definitions.
  */
 class OgMembershipViewsController extends EntityDefaultViewsController {
 
@@ -103,6 +103,12 @@ class OgMembershipViewsController extends EntityDefaultViewsController {
       ),
     );
 
+    // Improve relationship text.
+    $data['og']['og_membership']['title'] = t('OG membership from OG group');
+    $data['og']['og_membership']['help'] =  t('The OG membership associated with OG group via the group ID.');
+    $data['og']['og_membership']['relationship']['label'] = t('OG membership from OG group');
+
+
     return $data;
   }
 }
@@ -111,22 +117,22 @@ class OgMembershipViewsController extends EntityDefaultViewsController {
  * Implements hook_views_data_alter().
  */
 function og_views_data_alter(&$data) {
-  // TODO: This should be handled by entity-metadata.
+  $group_entities = og_get_all_group_entity();
+  $group_content_entities = og_get_all_group_content_entity();
+
   foreach (entity_get_info() as $entity_type => $info) {
     if (!empty($info['fieldable'])) {
-      // Group relationship.
+      // OG group relationship.
       if ($entity_type != 'group') {
-        $title = t('@entity group', array('@entity' => ucfirst($info['label'])));
-        $help = t('Add information on groups that belong to the @entity entity.', array('@entity' => ucfirst($info['label'])));
         $data[$info['base table']]['og_rel'] = array(
-          'group' => t('Group'),
-          'title' => $title,
-          'help' => $help,
+          'group' => t('OG group'),
+          'title' => t('OG group from @entity', array('@entity' => ucfirst($info['label']))),
+          'help' => t('The OG group associated with the @entity entity.', array('@entity' => ucfirst($info['label']))),
           'relationship' => array(
             // Pass the entity to the handler.
             'entity' => $entity_type,
             'handler' => 'og_handler_relationship',
-            'label' => t('group'),
+            'label' => t('@entity being the OG group', array('@entity' => $entity_type)),
             'base' => 'og',
             'base field' => 'etid',
             'relationship field' => $info['entity keys']['id'],
@@ -134,22 +140,52 @@ function og_views_data_alter(&$data) {
         );
       }
 
-      // Group membership relationship.
-      if ($entity_type != 'og_membership') {
-        $title = t('@entity group membership', array('@entity' => ucfirst($info['label'])));
-        $help = t('Add information on groups membership that are associated with the @entity entity.', array('@entity' => ucfirst($info['label'])));
+      // OG group's related entity.
+      if (!empty($group_entities[$entity_type])) {
+        $data['og']['og_related_' . $entity_type] = array(
+          'group' => t('OG group'),
+          'title' => t('@entity from OG group', array('@entity' => ucfirst($info['label']))),
+          'help' => t('The @entity entity that is associated with the OG group.', array('@entity' => $info['label'])),
+          'relationship' => array(
+            'handler' => 'views_handler_relationship',
+            'label' => t('@entity from OG group', array('@entity' => $entity_type)),
+            'base' => $info['base table'],
+            'base field' => $info['entity keys']['id'],
+            'relationship field' => 'etid',
+          ),
+        );
+      }
+
+      // OG membership relationship.
+      if (!in_array($entity_type, array('group', 'og_membership'))) {
         $data[$info['base table']]['og_membership_rel'] = array(
-          'group' => t('Group membership'),
-          'title' => $title,
-          'help' => $help,
+          'group' => t('OG membership'),
+          'title' => t('OG membership from @entity', array('@entity' => ucfirst($info['label']))),
+          'help' => t('The OG membership associated with the @entity entity.', array('@entity' => ucfirst($info['label']))),
           'relationship' => array(
             // Pass the entity to the handler.
             'entity' => $entity_type,
             'handler' => 'og_handler_relationship',
-            'label' => t('group membership'),
+            'label' => t('OG membership from @entity', array('@entity' => $entity_type)),
             'base' => 'og_membership',
             'base field' => 'etid',
             'relationship field' => $info['entity keys']['id'],
+          ),
+        );
+      }
+
+      // OG membership's related entity.
+      if (!empty($group_content_entities[$entity_type])) {
+        $data['og_membership']['og_membership_related_' . $entity_type] = array(
+          'group' => t('OG membership'),
+          'title' => t('@entity from OG membership', array('@entity' => ucfirst($info['label']))),
+          'help' => t('The @entity entity that is associated with the OG membership.', array('@entity' => $info['label'])),
+          'relationship' => array(
+            'handler' => 'views_handler_relationship',
+            'label' => t('@entity from OG membership', array('@entity' => $entity_type)),
+            'base' => $info['base table'],
+            'base field' => $info['entity keys']['id'],
+            'relationship field' => 'etid',
           ),
         );
       }
@@ -158,11 +194,6 @@ function og_views_data_alter(&$data) {
 
   // Override group audience - "gid" (group ID) field argument.
   $data['og_membership']['group']['argument']['handler'] = 'og_handler_argument_group_audience_gid';
-
-  // TODO: Remove field-data-group-audience completely form Views and use
-  // group membership entity instead.
-  unset($data['field_data_group_audience']['group_audience_gid']['argument']);
-  unset($data['field_data_group_audience']['group_audience_gid']['field']);
 
   // Override group and group membership - "state" filter and add a field.
   foreach (array('og', 'og_membership') as $type) {
@@ -187,6 +218,12 @@ function og_views_plugins() {
         'title' => t('Organic groups group'),
         'handler' => 'og_plugin_argument_validate_group',
         'path' => drupal_get_path('module', 'og') . '/includes/views',
+      ),
+    ),
+    'argument default' => array(
+      'og_user_groups' => array(
+        'title' => t('The OG groups of the logged in user'),
+        'handler' => 'og_plugin_argument_default_user_groups',
       ),
     ),
   );
