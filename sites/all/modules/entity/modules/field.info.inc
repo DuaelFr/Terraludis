@@ -53,7 +53,7 @@ function entity_metadata_field_default_property_callback(&$info, $entity_type, $
     $property = $instance['property info'] + array(
       'label' => $instance['label'],
       'type' => $field_type['property_type'],
-      'description' => t('Field "@name"', array('@name' => $name)),
+      'description' => t('Field "@name".', array('@name' => $name)),
       'getter callback' => 'entity_metadata_field_property_get',
       'setter callback' => 'entity_metadata_field_property_set',
       'access callback' => 'entity_metadata_field_access_callback',
@@ -122,7 +122,6 @@ function entity_metadata_field_term_reference_callback(&$info, $entity_type, $fi
   if ($instance['widget']['type'] != 'taxonomy_autocomplete') {
     $property['options list'] = 'entity_metadata_field_options_list';
   }
-  unset($property['query callback']);
 }
 
 /**
