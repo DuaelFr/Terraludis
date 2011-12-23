@@ -14,7 +14,6 @@ function date_field_formatter_info() {
       'field types' => array('date', 'datestamp', 'datetime'),
       'settings' => array(
         'format_type' => 'long',
-        'show_repeat_rule' => 'show',
         'multiple_number' => '',
         'multiple_from' => '',
         'multiple_to' => '',
@@ -45,10 +44,19 @@ function date_field_formatter_settings_form($field, $instance, $view_mode, $form
   module_load_include('inc', 'date', 'date_admin');
   switch ($formatter) {
     case 'format_interval':
-      return date_interval_formatter_settings_form($field, $instance, $view_mode, $form, $form_state);
+      $form = date_interval_formatter_settings_form($field, $instance, $view_mode, $form, $form_state);
     default:
-      return date_default_formatter_settings_form($field, $instance, $view_mode, $form, $form_state);
+      $form = date_default_formatter_settings_form($field, $instance, $view_mode, $form, $form_state);
   }
+  $context = array(
+    'field' => $field,
+    'instance' => $instance,
+    'view_mode' => $view_mode,
+  );
+  drupal_alter('date_field_formatter_settings_form', $form, $form_state, $context);
+
+  return $form;
+
 }
 
 /**
@@ -60,10 +68,19 @@ function date_field_formatter_settings_summary($field, $instance, $view_mode) {
   module_load_include('inc', 'date', 'date_admin');
   switch ($formatter) {
     case 'format_interval':
-      return date_interval_formatter_settings_summary($field, $instance, $view_mode);
+      $summary = date_interval_formatter_settings_summary($field, $instance, $view_mode);
     default:
-      return date_default_formatter_settings_summary($field, $instance, $view_mode);
+      $summary = date_default_formatter_settings_summary($field, $instance, $view_mode);
   }
+  $context = array(
+    'field' => $field,
+    'instance' => $instance,
+    'view_mode' => $view_mode,
+  );
+  drupal_alter('date_field_formatter_settings_summary', $summary, $context);
+
+  return implode('<br />', $summary);
+
 }
 
 /**
@@ -203,7 +220,6 @@ function date_field_info() {
   $settings = array(
     'settings' => array(
       'todate' => '',
-      'repeat' => 0,
       'granularity' => drupal_map_assoc(array('year', 'month', 'day', 'hour', 'minute')),
       'tz_handling' => 'site',
       'timezone_db' => 'UTC',
@@ -211,7 +227,7 @@ function date_field_info() {
     'instance_settings' => array(
       'default_value' => 'now',
       'default_value_code' => '',
-      'default_value2' => 'blank',
+      'default_value2' => 'same',
       'default_value_code2' => '',
     ),
     // Integrate with the Entity Metadata module.
@@ -255,7 +271,6 @@ function date_field_widget_info() {
       'text_parts' => array(),
       'year_range' => '-3:+3',
       'label_position' => 'above',
-      'repeat_collapsed' => 0,
     ),
     'behaviors' => array(
       'multiple values' => FIELD_BEHAVIOR_DEFAULT,
@@ -482,11 +497,11 @@ function date_content_migrate_instance_alter(&$instance_value, $field_value) {
 
 function date_old_formatter_get_settings($field_name, $type_name, $context) {
   $options = array();
-  $value = 'date:'. $type_name .':'. $context .':'. $field_name;
-  $options['show_repeat_rule'] = variable_get($value .'_show_repeat_rule', 'show');
-  $options['multiple_number'] = variable_get($value .'_multiple_number', '');
-  $options['multiple_from'] = variable_get($value .'_multiple_from', '');
-  $options['multiple_to'] = variable_get($value .'_multiple_to', '');
-  $options['fromto'] = variable_get($value .'_fromto', 'both');
+  $value = 'date:' . $type_name . ':' . $context . ':' . $field_name;
+  $options['show_repeat_rule'] = variable_get($value . '_show_repeat_rule', 'show');
+  $options['multiple_number'] = variable_get($value . '_multiple_number', '');
+  $options['multiple_from'] = variable_get($value . '_multiple_from', '');
+  $options['multiple_to'] = variable_get($value . '_multiple_to', '');
+  $options['fromto'] = variable_get($value . '_fromto', 'both');
   return $options;
 }

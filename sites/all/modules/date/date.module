@@ -289,12 +289,6 @@ function date_form_field_ui_field_edit_form_alter(&$form, &$form_state, $form_id
     return;
   }
 
-  // If using repeating dates, override the Field module's handling of the multiple values option.
-  if (module_exists('date_repeat') && date_is_repeat_field($field, $instance)) {
-    $form['field']['cardinality']['#disabled'] = TRUE;
-    $form['field']['cardinality']['#value'] = FIELD_CARDINALITY_UNLIMITED;
-  }
-
   // Reorganize the instance settings and widget settings sections into a more
   // intuitive combined fieldset.
   $form['instance']['defaults'] = array(
@@ -422,7 +416,7 @@ function date_format_type_format($format_type, $langcode = NULL) {
         $default = 'D, m/d/Y - H:i';
         break;
     }
-    $format = variable_get('date_format_'. $format_type, $default);
+    $format = variable_get('date_format_' . $format_type, $default);
   }
   return $format;
 }

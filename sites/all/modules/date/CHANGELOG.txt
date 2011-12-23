@@ -5,6 +5,10 @@ Date Module 7.x
 Version 7.x-2.x-dev
 ===================
 
+======================
+Version 7.x-2.0-rc1
+======================
+
 Notes:
 The Date Browser has been removed. Please use the Date Pager instead. If you have existing views using the Date
 Browser the navigation will just disappear from them. If you add a Date Pager to the view you should get it back.
@@ -23,7 +27,8 @@ use Repeating dates you can disable it.
 
 New Features/Major Changes
 
-- Issue #1236216, Start the process of moving the repeating date integration out of the Date module and into a separate, Date Repeat Field module.
+- Issue #1229378 by ksenzee, Sync the end date with the start date on new dates using select widgets.
+- Issue #1236216, Move the repeating date integration out of the Date module and into a separate, Date Repeat Field module.
 - Issue #874322, The All Day functionality has been moved into a separate module and hooks were added to make it easier for other modules to inject steps into date processing.
 - Issue #1267046, Include the UNTIL date in repeating results..
 - Issue #1354606 by temaruk, Rework the repeating date UI to make it more user-friendly.
@@ -33,6 +38,9 @@ New Features/Major Changes
 
 Bugfixes
 
+- Fix to new default date handling, the default date has to set a date in the database timezone, not the display timezone.
+- Issue #1245106 by Gábor Hojtsy, Hide the option to add the delta into the view for single value fields.
+- Issue #1370876, Make sure new Date All Day code does not try to set the popup values if Date Popup is disabled.
 - Issue #874322, Add back the date_field_all_day() function to avoid breaking other modules that are using it.
 - Fix Date text placeholder to display a formatted date instead of a format. Follow up to Date repeat UI changes.
 - Issue #1248520 by fearlsgroove, Use attribute selector on all day and end day checkboxes.
