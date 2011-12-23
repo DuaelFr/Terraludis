@@ -294,8 +294,8 @@ function tl_actualites_field_default_fields() {
       'module' => 'list',
       'settings' => array(
         'allowed_values' => array(
-          'Actualité' => 'Actualité',
-          'Brève' => 'Brève',
+          'actualites' => 'Actualité',
+          'breves' => 'Brève',
         ),
         'allowed_values_function' => '',
       ),
@@ -304,11 +304,7 @@ function tl_actualites_field_default_fields() {
     ),
     'field_instance' => array(
       'bundle' => 'actualite',
-      'default_value' => array(
-        0 => array(
-          'value' => 'Actualité',
-        ),
-      ),
+      'default_value' => NULL,
       'deleted' => '0',
       'description' => '',
       'display' => array(
@@ -328,7 +324,7 @@ function tl_actualites_field_default_fields() {
       ),
       'entity_type' => 'node',
       'field_name' => 'field_news_type',
-      'label' => 'Type d\'actualité',
+      'label' => 'Type d\'Actualité',
       'required' => 1,
       'settings' => array(
         'user_register_form' => FALSE,
@@ -501,7 +497,7 @@ function tl_actualites_field_default_fields() {
   t('Body');
   t('Liens');
   t('Tags');
-  t('Type d\'actualité');
+  t('Type d\'Actualité');
   t('Type de lien');
   t('URL');
 
