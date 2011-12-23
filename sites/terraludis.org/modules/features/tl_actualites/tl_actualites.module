@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the TL Actualités feature.
+ */
+
+include_once('tl_actualites.features.inc');
