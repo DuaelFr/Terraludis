@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the TL Context global feature.
+ */
+
+include_once('tl_context_global.features.inc');
