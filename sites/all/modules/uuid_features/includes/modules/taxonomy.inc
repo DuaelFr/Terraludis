@@ -39,9 +39,9 @@ function taxonomy_uuid_node_features_export_render_alter(&$export, &$node, $modu
 function taxonomy_uuid_node_features_rebuild_alter(&$node, $module) {
   if (!empty($node->uuid_term)) {
     $node->taxonomy = array();
+    $tids = entity_get_id_by_uuid('taxonomy_term', $node->uuid_term);
     foreach ($node->uuid_term as $uuid) {
-      $tid = uuid_taxonomy_term_find($uuid);
-      if (empty($tid)) {
+      if (empty($tids[$uuid])) {
         // If no tid was found, then the term doesn't exist, and most likely
         // the uuid_term rebuild needs to run first.
         // TODO: figure out how to weight feature components.
@@ -53,6 +53,8 @@ function taxonomy_uuid_node_features_rebuild_alter(&$node, $module) {
           watchdog('uuid_features', 'The term specified by %uuid could not be found.', array('%uuid' => $uuid));
           continue;
         }
+      } else {
+        $tid = $tids[$uuid];
       }
 
       $node->taxonomy[] = $tid;
