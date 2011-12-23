@@ -1,0 +1,12 @@
+<?php
+
+/**
+ * Modification de l'ordre des éléments du formulaire de login
+ * @param array $form
+ */
+function tl_hacks_form_user_login_block_alter(&$form) {
+  $form['name']['#weight'] = 1;
+  $form['pass']['#weight'] = 2;
+  $form['actions']['#weight'] = 3;
+  $form['links']['#weight'] = 4;
+}

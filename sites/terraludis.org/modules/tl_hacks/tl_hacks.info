@@ -1,0 +1,6 @@
+name = TL Hacks
+description = "Modifications diverses et mineures"
+package = Terraludis
+core = 7.x
+
+files[] = tl_hacks.module
