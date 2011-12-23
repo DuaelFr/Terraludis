@@ -131,7 +131,7 @@ function tl_actualites_views_default_views() {
   $handler->display->display_options['fields']['changed']['empty_zero'] = 0;
   $handler->display->display_options['fields']['changed']['hide_alter_empty'] = 1;
   $handler->display->display_options['fields']['changed']['date_format'] = 'short';
-  /* Champ: Contenu : Description */
+  /* Champ: Contenu : Body */
   $handler->display->display_options['fields']['body']['id'] = 'body';
   $handler->display->display_options['fields']['body']['table'] = 'field_data_body';
   $handler->display->display_options['fields']['body']['field'] = 'body';
@@ -228,7 +228,6 @@ function tl_actualites_views_default_views() {
   $handler->display->display_options['arguments']['field_news_type_value']['summary']['number_of_records'] = '0';
   $handler->display->display_options['arguments']['field_news_type_value']['summary']['format'] = 'default_summary';
   $handler->display->display_options['arguments']['field_news_type_value']['summary_options']['items_per_page'] = '25';
-  $handler->display->display_options['arguments']['field_news_type_value']['specify_validation'] = 1;
   $handler->display->display_options['arguments']['field_news_type_value']['glossary'] = 0;
   $handler->display->display_options['arguments']['field_news_type_value']['limit'] = '0';
   $handler->display->display_options['arguments']['field_news_type_value']['path_case'] = 'lower';
