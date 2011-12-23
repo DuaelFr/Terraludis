@@ -1,0 +1,109 @@
+/*
+  CSS pour le menu principal.
+  Basé sur sites/all/modules/nice_menu/nice_menu_default.css
+*/
+
+/******************************
+ Global CSS for ALL menu types
+******************************/
+
+#block-nice-menus-1 {
+	margin-top: 40px;
+	margin-bottom: 0;
+	padding-top: 20px;
+	padding-bottom: 0;
+	background: url(../images/menu-back-top.png) top right no-repeat;
+}
+#block-nice-menus-1 .content {
+	padding-bottom: 20px;
+	background: url(../images/menu-back-bottom.png) bottom right no-repeat;
+}
+
+ul.nice-menu,
+ul.nice-menu ul {
+  border-top: #cecece solid 2px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+ul.nice-menu li {
+  border-top: 0;
+  border-bottom: #cecece solid 2px;
+  float: left; /* LTR */
+  background-color: #e0e0e0;
+  font-size: 90%;
+}
+
+ul.nice-menu a {
+  padding: 0.3em 5px 0.3em 5px;
+}
+
+ul.nice-menu ul {
+  top: 1.8em;
+  left: -1px; /* LTR */
+  border: 0;
+  border-top: #cecece solid 2px;
+  margin-right: 0; /* LTR */
+  width: 180px;
+}
+
+ul.nice-menu ul li {
+  width: 180px;
+}
+
+/******************************
+ VERTICAL (left/right) menus
+******************************/
+
+/* This is the default width of all vertical menus. */
+ul.nice-menu-right, ul.nice-menu-left,
+ul.nice-menu-right li, ul.nice-menu-left li {
+  width: 12.5em;
+}
+
+/* VERTICAL menus where submenus pop RIGHT (default). */
+ul.nice-menu-right ul {
+  width: 180px;
+  left: 230px;
+  top: -2px;
+}
+
+ul.nice-menu-right ul ul {
+  width: 180px;
+  left: 180px;
+  top: -2px;
+}
+
+/* Modifications prioritaires (à garder à la fin) */
+
+ul.nice-menu li.menuparent {
+	height: 28px;
+	padding-top: 7px;
+	border-left: 0;
+	border-right: 0;
+	background: #f4f4f4 url(../images/menu-back.png) top right repeat-y;
+	text-align: right;
+	font-size: 110%;
+	font-weight: normal;
+}
+ul.nice-menu li.active-trail {
+	background: url(../images/menu-parent-active.png) no-repeat;
+}
+
+ul.nice-menu-right, ul.nice-menu-left, ul.nice-menu-right li, ul.nice-menu-left li {
+	width: 230px;
+}
+ul.nice-menu a, ul.nice-menu a:visited {
+	color: black;
+	text-decoration: none;
+}
+ul.nice-menu li:hover, nice-menu a:hover {
+	background-color: #cecece;
+}
+ul.nice-menu li.menuparent:hover {
+	background: url(../images/menu-parent-over.png) repeat-y;
+}
+ul.nice-menu li.active-trail:hover {
+	background: url(../images/menu-parent-active-over.png) no-repeat;
+}

@@ -1,0 +1,308 @@
+/**
+ * @file
+ * Page Styling
+ *
+ * Style the markup found in page.tpl.php. Also includes some styling of
+ * miscellaneous Drupal elements that appear in the $content variable, such as
+ * ul.links, .pager, .more-link, etc.
+ */
+
+
+/*
+ * Body
+ */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#page-wrapper {
+}
+
+#page {
+}
+
+
+/*
+ * Global
+ */
+a {
+	color: #336633;
+}
+a:hover, a:active {
+	color: #99cc33;
+}
+
+#user-login-form a, #user-login-form a:visited, #block-logintoboggan-logintoboggan-logged-in a, #block-logintoboggan-logintoboggan-logged-in a:visited {
+	color: #828282;
+	text-decoration: none;
+}
+#user-login-form a:hover, #user-login-form a:active, #block-logintoboggan-logintoboggan-logged-ina:hover, #block-logintoboggan-logintoboggan-logged-in a:active {
+	color: #828282;
+	text-decoration: underline;
+}
+
+
+/*
+ * The skip-link link will be completely hidden until a user tabs to the link.
+ * See the element-focusable rule in system.base.css.
+ */
+#skip-link a,
+#skip-link a:visited {
+  display: block;
+  width: 100%;
+  padding: 2px 0 3px 0;
+  text-align: center;
+  background-color: #666;
+  color: #fff;
+}
+
+/*
+ * Header
+ */
+#header {
+	height: 200px;
+	overflow: hidden;
+}
+
+#header .section {
+}
+
+#logo /* Wrapping link for logo */ {
+  float:left;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+#logo img {
+  margin-top: 56px;
+  margin-left: 52px;
+  margin-right: 28px;
+}
+
+#name-and-slogan /* Wrapper for website name and slogan */ {
+  float: left;
+}
+
+h1#site-name,
+div#site-name /* The name of the website */ {
+  margin: 0;
+  font-size: 2em;
+  line-height: 1.5em;
+}
+
+#site-name a:link,
+#site-name a:visited {
+  color: #000;
+  text-decoration: none;
+}
+
+#site-name a:hover,
+#site-name a:focus {
+  text-decoration: underline;
+}
+
+#site-slogan /* The slogan (or tagline) of a website */ {
+}
+
+
+.region-header /* Contient l'identification */ {
+	float: left;
+	width: 390px;
+	height: 60px;
+	margin-left: 315px;
+	padding-top: 70px;
+}
+.region-header2 /* Contient la recherche */ {
+	float: right;
+	width: 190px;
+	margin-right: 20px;
+}
+.breadcrumb /* The path to the current page in the form of a list of links */ {
+	padding-top: 136px;
+	padding-bottom: 0; /* Undo system.css */
+	font-size: 90%;
+}
+
+#block-user-login {
+	/*width: 390px;
+	height: 60px;*/
+	margin-bottom: 0;
+	display: inline-block;
+}
+#user-login-form ul {
+	width: 390px;
+}
+#block-search-form {
+	width: 200px;
+	height: 34px;
+}
+
+
+/*
+ * Main (container for everything else)
+ */
+#main-wrapper {
+	clear: both;
+}
+
+#main {
+}
+
+/*
+ * Content
+ */
+#content {
+}
+
+#content .section {
+}
+
+.region-highlighted {
+}
+
+
+
+h1.title, /* The title of the page */
+h2.node-title, /* Title of a piece of content when it is given in a list of content */
+h2.block-title, /* Block title */
+h2.title, /* Comment section heading */
+h2.comment-form, /* Comment form heading */
+h3.title /* Comment title */ {
+  margin: 0;
+}
+
+h1.title {
+	font-size: 2.5em;
+	font-weight: normal;
+}
+
+tr.even /* Some tables have rows marked even or odd. */ {
+  /* background-color: #eee; */ /* Drupal core uses a #eee background */
+}
+
+tr.odd {
+  /* background-color: #eee; */ /* Drupal core uses a #eee background */
+}
+
+div.messages /* Important messages (status, warning, and error) for the user. See also the declarations in messages.css. */ {
+  margin: 1.5em 0; /* Drupal core uses "6px 0" margin */
+}
+
+div.messages ul {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+div.status /* Normal priority messages */ {
+}
+
+div.warning,
+tr.warning /* Medium priority messages */ {
+  /* border: 1px solid #f0c020; */ /* Drupal core uses: 1px solid #f0c020 */
+}
+
+div.error,
+tr.error /* High priority messages. See also the .error declaration below. */ {
+}
+
+.error /* Errors that are separate from div.messages status messages. */ {
+  /* color: #e55; */ /* Drupal core uses a #e55 background */
+}
+
+.warning /* Warnings that are separate from div.messages status messages. */ {
+  /* color: #e09010; */ /* Drupal core uses a #e09010 background */
+}
+
+div.tabs /* See also the tabs.css file. */ {
+}
+
+.region-help /* Help text on a page */ {
+}
+
+.more-help-link /* Link to more help */ {
+}
+
+.region-content /* Wrapper for the actual page content */ {
+}
+
+ul.links /* List of links */ {
+}
+
+ul.links.inline {
+  display: block; /* Let the links be inline, but the container be a block. */
+}
+
+ul.links li {
+  padding: 0 1em 0 0; /* LTR */
+}
+
+.item-list .pager /* A list of page numbers when more than 1 page of content is available */ {
+  padding: 0;
+}
+
+.item-list .pager li /* Each page number in the pager list */ {
+  padding: 0 0.5em;
+}
+
+.feed-icon /* The link to the RSS or Atom feed for the current list of content */ {
+}
+
+.more-link /* Aggregator, blog, and forum more link */ {
+}
+
+/*
+ * First sidebar (on left in LTR languages, on right in RTL)
+ *
+ * Remember to NOT add padding or margin to your .region-sidebar-first
+ * (see the layout.css file.)
+ */
+.region-sidebar-first {
+}
+
+.region-sidebar-first .section {
+}
+
+/*
+ * Second sidebar (on right in LTR languages, on left in RTL)
+ *
+ * Remember to NOT add padding or margin to your .region-sidebar-second
+ * (see the layout.css file.)
+ */
+.region-sidebar-second {
+}
+
+.region-sidebar-second .section {
+}
+
+/*
+ * Footer
+ */
+.region-footer {
+}
+#footer-content ul.menu {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	text-align: center;
+}
+#footer-content ul.menu li {
+	display: inline;
+}
+#footer-content a, #footer-content a:visited, #footer-content a.active, #footer-content a.active:visited {
+	text-decoration: none;
+	color: black;
+	padding: 0 15px;
+}
+#footer-content a:hover, #footer-content a:focus, #footer-content a.active:hover, #footer-content a.active:focus {
+	text-decoration: none;
+	color: white;
+}
+
+/*
+ * Page bottom
+ */
+.region-bottom /* Wrapper for any blocks placed in the page bottom region */ {
+}
