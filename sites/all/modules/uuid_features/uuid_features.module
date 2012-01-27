@@ -6,25 +6,20 @@
 function uuid_features_features_api() {
   $components = array();
 
-    $components['uuid_node'] = array(
-      'name' => t('Content'),
-      'features_source' => TRUE,
-      'default_hook' => 'uuid_features_default_content',
-      'default_file' => FEATURES_DEFAULTS_INCLUDED,
-      'file' => drupal_get_path('module', 'uuid_features') . '/includes/uuid_node.features.inc',
-    );
-    $components['uuid_vocabulary'] = array(
-      'name' => t('Vocabulary'),
-      'default_hook' => 'uuid_features_default_vocabularies',
-      'default_file' => FEATURES_DEFAULTS_INCLUDED,
-      'file' => drupal_get_path('module', 'uuid_features') . '/includes/uuid_vocabulary.features.inc',
-    );
-    $components['uuid_term'] = array(
-      'name' => t('Taxonomy Term'),
-      'default_hook' => 'uuid_features_default_terms',
-      'default_file' => FEATURES_DEFAULTS_INCLUDED,
-      'file' => drupal_get_path('module', 'uuid_features') . '/includes/uuid_term.features.inc',
-    );
+  $components['uuid_node'] = array(
+    'name' => t('Content'),
+    'features_source' => TRUE,
+    'default_hook' => 'uuid_features_default_content',
+    'default_file' => FEATURES_DEFAULTS_INCLUDED,
+    'file' => drupal_get_path('module', 'uuid_features') . '/includes/uuid_node.features.inc',
+  );
+
+  $components['uuid_term'] = array(
+    'name' => t('Taxonomy Term'),
+    'default_hook' => 'uuid_features_default_terms',
+    'default_file' => FEATURES_DEFAULTS_INCLUDED,
+    'file' => drupal_get_path('module', 'uuid_features') . '/includes/uuid_term.features.inc',
+  );
 
   // Depends on http://drupal.org/node/808690
   if (function_exists('uuid_file_insert')) {

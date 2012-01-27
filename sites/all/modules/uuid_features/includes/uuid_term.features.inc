@@ -9,7 +9,8 @@
  * @param string $uuid
  */
 function uuid_taxonomy_term_find($uuid) {
-  return reset(entity_get_id_by_uuid('taxonomy_term', array($uuid)));
+  $ids = entity_get_id_by_uuid('taxonomy_term', array($uuid));
+  return array_key_exists($uuid, $ids) ? $ids[$uuid] : FALSE;
 }
 
 /**
@@ -48,8 +49,8 @@ function uuid_term_features_export($data, &$export, $module_name = '') {
       INNER JOIN {taxonomy_term_data} t ON t.vid = v.vid
       WHERE t.uuid = :uuid', array(':uuid' => $uuid))->fetchField();
 
-    // Add the vocab UUID to the pipe, to be processed by uuid_vocabulary.
-    $export['features']['uuid_vocabulary'][$voc_machine_name] = $voc_machine_name;
+    // Add the vocab to the pipe
+    $export['features']['taxonomy'][$voc_machine_name] = $voc_machine_name;
 
     // Get the UUID of the term's parents.
     $tid = uuid_taxonomy_term_find($uuid);
@@ -99,7 +100,7 @@ function uuid_term_features_export_render($module = 'foo', $data) {
       WHERE t.vid = :vid', array(':vid' => $term->vid))->fetchField();*/
     $vocabularies = taxonomy_vocabulary_load_multiple(array($term->vid));
 
-    $export['uuid_vocabulary'] = $vocabularies[$term->vid]->machine_name;
+    $export['vocabulary'] = $vocabularies[$term->vid]->machine_name;
 
     $code[] = '  $terms[] = ' . features_var_export($export, '  ') . ';';
   }
@@ -134,7 +135,7 @@ function uuid_term_features_rebuild($module) {
         $data['tid'] = $existing;
       }
 
-      $vid = db_query('SELECT vid FROM {taxonomy_vocabulary} WHERE machine_name = :machine_name', array(':machine_name' => $data['uuid_vocabulary']))->fetchField();
+      $vid = db_query('SELECT vid FROM {taxonomy_vocabulary} WHERE machine_name = :machine_name', array(':machine_name' => $data['vocabulary']))->fetchField();
       if ($vid) {
         $data['vid'] = $vid;
 
@@ -144,10 +145,8 @@ function uuid_term_features_rebuild($module) {
           }
         }
 
-        $ret = taxonomy_term_save($term /* TODO Term object replaces array $data */);
-
-        // TODO: remove when http://drupal.org/node/860442 is resolved.
-        uuid_set_uuid('taxonomy_term_data', 'tid', $data['tid'], $data['uuid']);
+        $term = (object) $data;
+        $ret = taxonomy_term_save($term);
       }
 
     }
