@@ -77,7 +77,7 @@ function tl_config_base_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'file_private_path';
-  $strongarm->value = 'sites/terraludis.org/private';
+  $strongarm->value = '';
   $export['file_private_path'] = $strongarm;
 
   $strongarm = new stdClass;
@@ -116,7 +116,7 @@ function tl_config_base_strongarm() {
     'domain' => '',
     'prefix' => 'fr',
     'weight' => '0',
-    'javascript' => 'WrPaeIaBPXNMKh2Fy9UPKbGZDzPIInVsy-1X9ufWOig',
+    'javascript' => 'yWYIGpkHNbzGvUJwt4yrWwlmLzr_WaZc_VsgY1zh704',
   );
   $export['language_default'] = $strongarm;
 
