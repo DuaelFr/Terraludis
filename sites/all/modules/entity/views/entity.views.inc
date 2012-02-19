@@ -63,6 +63,19 @@ function entity_views_data() {
     }
   }
 
+  $data['entity__global']['table']['group'] = t('Entity');
+  $data['entity__global']['table']['join'] = array(
+    // #global let's it appear all the time.
+    '#global' => array(),
+  );
+  $data['entity__global']['entity'] = array(
+    'title' => t('Rendered entity'),
+    'help' => t('Displays a single chosen entity.'),
+    'area' => array(
+      'handler' => 'entity_views_handler_area_entity',
+    ),
+  );
+
   return $data;
 }
 
@@ -388,7 +401,7 @@ class EntityDefaultViewsController {
 
     $description = array(
       'title' => $property_info['label'],
-      'help' => $property_info['description'],
+      'help' => isset($property_info['description']) ? $property_info['description'] : NULL,
     );
 
       // Add in relationships to related entities.
@@ -546,11 +559,17 @@ class EntityDefaultViewsController {
       break;
     }
 
-    // If there is an options list callback, add to the filter.
+    // If there is an options list callback, add to the filter and field.
     if (isset($return['filter']) && !empty($property_info['options list'])) {
       $return['filter']['handler'] = 'views_handler_filter_in_operator';
       $return['filter']['options callback'] = array('EntityDefaultViewsController', 'optionsListCallback');
       $return['filter']['options arguments'] = array($this->type, $property_name, 'view');
+    }
+    // @todo: This class_exists is needed until views 3.2.
+    if (isset($return['field']) && !empty($property_info['options list']) && class_exists('views_handler_field_machine_name')) {
+      $return['field']['handler'] = 'views_handler_field_machine_name';
+      $return['field']['options callback'] = array('EntityDefaultViewsController', 'optionsListCallback');
+      $return['field']['options arguments'] = array($this->type, $property_name, 'view');
     }
     return $return;
   }

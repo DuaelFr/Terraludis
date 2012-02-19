@@ -675,7 +675,10 @@ class EntityDrupalWrapper extends EntityStructureWrapper {
 
     if ($this->bundle && isset($this->propertyInfo['bundles'][$this->bundle])) {
       $bundle_info = (array) $this->propertyInfo['bundles'][$this->bundle] + array('properties' => array());
-      $this->propertyInfo['properties'] += $bundle_info['properties'];
+      // Allow bundles to re-define existing properties, such that the bundle
+      // can add in more bundle-specific details like the bundle of a referenced
+      // entity.
+      $this->propertyInfo['properties'] = $bundle_info['properties'] + $this->propertyInfo['properties'];
     }
   }
 
@@ -800,6 +803,9 @@ class EntityDrupalWrapper extends EntityStructureWrapper {
   /**
    * Permanently save the wrapped entity.
    *
+   * @throws EntityMetadataWrapperException
+   *   If the entity type does not support saving.
+   *
    * @return EntityDrupalWrapper
    */
   public function save() {
@@ -807,7 +813,7 @@ class EntityDrupalWrapper extends EntityStructureWrapper {
       if (!entity_type_supports($this->type, 'save')) {
         throw new EntityMetadataWrapperException("There is no information about how to save entities of type " . check_plain($this->type) . '.');
       }
-      $return = entity_save($this->type, $this->data);
+      entity_save($this->type, $this->data);
       // On insert, update the identifier afterwards.
       if (!$this->id) {
         list($this->id, , ) = entity_extract_ids($this->type, $this->data);

@@ -40,19 +40,45 @@ function uuid_services_example_default_services_endpoint() {
     ),
   );
   $endpoint->resources = array(
+    'comment' => array(
+      'operations' => array(
+        'update' => array(
+          'enabled' => 1,
+        ),
+      ),
+    ),
+    'file' => array(
+      'operations' => array(
+        'update' => array(
+          'enabled' => 1,
+        ),
+      ),
+    ),
+    'node' => array(
+      'operations' => array(
+        'update' => array(
+          'enabled' => 1,
+        ),
+      ),
+    ),
+    'taxonomy_term' => array(
+      'operations' => array(
+        'update' => array(
+          'enabled' => 1,
+        ),
+      ),
+    ),
     'user' => array(
+      'operations' => array(
+        'update' => array(
+          'enabled' => 1,
+        ),
+      ),
       'actions' => array(
         'login' => array(
           'enabled' => 1,
         ),
         'logout' => array(
-          'enabled' => 1,
-        ),
-      ),
-    ),
-    'uuid_entity' => array(
-      'operations' => array(
-        'update' => array(
           'enabled' => 1,
         ),
       ),

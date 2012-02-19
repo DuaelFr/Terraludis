@@ -6,21 +6,61 @@
  */
 
 /**
- * Constants indicating entities' high-level relationship between each other.
- *
- * Right now, these constants are mostly used when exporting UUID entities
- * from a deployment plan. They belong more to Deploy module, but since exported
- * entities might be "read" without Deploy module's exitence, they need to live
- * here.
- */
-define('ENTITY_RELATIONSHIP_ORIGIN', 1);
-define('ENTITY_RELATIONSHIP_DEPENDENCY', 2);
-define('ENTITY_RELATIONSHIP_BELONGING', 3);
-
-/**
  * Entity UUID exception class.
  */
 class UuidEntityException extends Exception {}
+
+/**
+ * Helper function that returns entity info for all supported core modules,
+ * relevant for UUID functionality.
+ *
+ * @see uuid_entity_info()
+ * @see uuid_schema_alter()
+ * @see uuid_install()
+ * @see uuid_uninstall()
+ */
+function uuid_get_core_entity_info() {
+  $info = array();
+  $info['user'] = array(
+    'base table' => 'users',
+    'entity keys' => array(
+      'uuid' => 'uuid',
+    ),
+  );
+  $info['node'] = array(
+    'base table' => 'node',
+    'revision table' => 'node_revision',
+    'entity keys' => array(
+      'uuid' => 'uuid',
+      'revision uuid' => 'vuuid',
+    ),
+  );
+  if (module_exists('comment')) {
+    $info['comment'] = array(
+      'base table' => 'comment',
+      'entity keys' => array(
+        'uuid' => 'uuid',
+      ),
+    );
+  }
+  if (module_exists('file')) {
+    $info['file'] = array(
+      'base table' => 'file_managed',
+      'entity keys' => array(
+        'uuid' => 'uuid',
+      ),
+    );
+  }
+  if (module_exists('taxonomy')) {
+    $info['taxonomy_term'] = array(
+      'base table' => 'taxonomy_term_data',
+      'entity keys' => array(
+        'uuid' => 'uuid',
+      ),
+    );
+  }
+  return $info;
+}
 
 /**
  * @defgroup uuid_entity_hooks UUID implementation of Entity API
@@ -30,25 +70,15 @@ class UuidEntityException extends Exception {}
 /**
  * Implements of hook_entity_info_alter().
  *
- * This enables UUID for all core entities.
+ * @see uuid_core_entity_info().
  */
 function uuid_entity_info_alter(&$info) {
-  $info['node']['uuid'] = TRUE;
-  $info['node']['entity keys']['uuid'] = 'uuid';
-  $info['node']['entity keys']['revision uuid'] = 'vuuid';
-  $info['user']['uuid'] = TRUE;
-  $info['user']['entity keys']['uuid'] = 'uuid';
-  if (module_exists('comment')) {
-    $info['comment']['uuid'] = TRUE;
-    $info['comment']['entity keys']['uuid'] = 'uuid';
-  }
-  if (module_exists('file')) {
-    $info['file']['uuid'] = TRUE;
-    $info['file']['entity keys']['uuid'] = 'uuid';
-  }
-  if (module_exists('taxonomy')) {
-    $info['taxonomy_term']['uuid'] = TRUE;
-    $info['taxonomy_term']['entity keys']['uuid'] = 'uuid';
+  foreach (uuid_get_core_entity_info() as $entity_type => $core_info) {
+    $info[$entity_type]['uuid'] = TRUE;
+    $info[$entity_type]['entity keys']['uuid'] = $core_info['entity keys']['uuid'];
+    if (!empty($core_info['entity keys']['revision uuid'])) {
+      $info[$entity_type]['entity keys']['revision uuid'] = $core_info['entity keys']['revision uuid'];
+    }
   }
 }
 
@@ -80,46 +110,6 @@ function uuid_entity_property_info_alter(&$info) {
 }
 
 /**
- * Implements of hook_entity_load().
- */
-function uuid_entity_load(&$entities, $entity_type) {
-  $info = entity_get_info($entity_type);
-  if (isset($info['uuid']) && $info['uuid'] == TRUE && !empty($info['entity keys']['uuid'])) {
-    $id_key = $info['entity keys']['id'];
-    $uuid_key = $info['entity keys']['uuid'];
-    if (!empty($info['entity keys']['revision uuid'])) {
-      $vid_key = $info['entity keys']['revision'];
-      $vuuid_key = $info['entity keys']['revision uuid'];
-    }
-    $ids = array();
-    $vids = array();
-    foreach ($entities as $entity) {
-      // Some entities sets the UUID them selfs (i.e. nodes). If the first one
-      // does have a UUID, it means the others have too. So, stop here.
-      if (isset($entity->{$uuid_key}) && !empty($entity->{$uuid_key})) {
-        return;
-      }
-      $ids[] = $entity->{$id_key};
-      if (isset($vuuid_key) && !empty($entity->{$vid_key})) {
-        $vids[] = $entity->{$vid_key};
-      }
-    }
-    $uuids = entity_get_uuid_by_id($entity_type, $ids);
-    if (!empty($vids)) {
-      $vuuids = entity_get_uuid_by_id($entity_type, $vids, TRUE);
-    }
-    foreach ($entities as &$entity) {
-      if (empty($entity->{$uuid_key})) {
-        $entity->{$uuid_key} = $uuids[$entity->{$id_key}];
-      }
-      if (isset($vuuid_key) && empty($entity->{$vuuid_key}) && !empty($entity->{$vid_key}) && !empty($vuuids[$entity->{$vid_key}])) {
-        $entity->{$vuuid_key} = $vuuids[$entity->{$vid_key}];
-      }
-    }
-  }
-}
-
-/**
  * Implements of hook_entity_presave().
  *
  * This is where all UUID-enabled entities get their UUIDs.
@@ -133,7 +123,7 @@ function uuid_entity_presave($entity, $entity_type) {
     }
     if (!empty($info['entity keys']['revision uuid'])) {
       $vuuid_key = $info['entity keys']['revision uuid'];
-      if (isset($entity->revision) && $entity->revision == TRUE) {
+      if ((isset($entity->revision) && $entity->revision == TRUE) || empty($entity->{$vuuid_key})) {
         $entity->{$vuuid_key} = uuid_generate();
       }
     }
@@ -151,7 +141,7 @@ function uuid_entity_presave($entity, $entity_type) {
  */
 
 /**
- * Load entities only containing UUID references.
+ * Load entities by their UUID, that only should containing UUID references.
  *
  * This function is mostly useful if you want to load an entity from the local
  * database that only should contain UUID references.
@@ -173,6 +163,15 @@ function entity_uuid_load($entity_type, $uuids = array(), $conditions = array(),
     $entities[$key] = clone $entity;
   }
 
+  entity_make_entity_universal($entity_type, $entities);
+
+  return $entities;
+}
+
+/**
+ * Helper function to make an entity universal (i.e. only global references).
+ */
+function entity_make_entity_universal($entity_type, $entities) {
   // Let other modules transform local ID references to UUID references.
   if (!empty($entities)) {
     $hook = 'entity_uuid_load';
@@ -183,13 +182,13 @@ function entity_uuid_load($entity_type, $uuids = array(), $conditions = array(),
       }
     }
   }
-
-  return $entities;
 }
 
 /**
- * Permanently saves an entity by its UUID. This function depends on the
- * Entity API module to provide the 'entity_save()' function.
+ * Permanently saves an entity by its UUID.
+ *
+ * This function depends on the Entity API module to provide the
+ * 'entity_save()' function.
  *
  * This function is mostly useful if you want to save an entity into the local
  * database that only contains UUID references.
@@ -202,6 +201,24 @@ function entity_uuid_save($entity_type, $entity) {
     throw new UuidEntityException(t('Calling %function requires the Entity API module (!link).', array('%function' => __FUNCTION__, '!link' => 'http://drupal.org/project/entity')));
   }
 
+  entity_make_entity_local($entity_type, $entity);
+
+  // Save the entity.
+  entity_save($entity_type, $entity);
+
+  $hook = 'entity_uuid_save';
+  foreach (module_implements($hook) as $module) {
+    $function = $module . '_' . $hook;
+    if (function_exists($function)) {
+      $function($entity, $entity_type);
+    }
+  }
+}
+
+/**
+ * Helper function to make an entity local (i.e. only local references).
+ */
+function entity_make_entity_local($entity_type, $entity) {
   $info = entity_get_info($entity_type);
   if (isset($info['uuid']) && $info['uuid'] == TRUE && !empty($info['entity keys']['uuid'])) {
     // Get the keys for local ID and UUID.
@@ -211,17 +228,20 @@ function entity_uuid_save($entity_type, $entity) {
     // UUID entites must always provide a valid UUID when saving in order to do
     // the correct mapping between local and global IDs.
     if (empty($entity->{$uuid_key}) || !uuid_is_valid($entity->{$uuid_key})) {
-      throw new EntityUuidException(t('Trying to save a @type entity with empty or invalid UUID.', array('@type' => $info['label'])));
+      throw new UuidEntityException(t('Trying to save a @type entity with empty or invalid UUID.', array('@type' => $info['label'])));
     }
 
     // Fetch the local ID by its UUID.
-    $id = reset(entity_get_id_by_uuid($entity_type, array($entity->{$uuid_key})));
+    $ids = entity_get_id_by_uuid($entity_type, array($entity->{$uuid_key}));
+    $id = reset($ids);
     // Set the correct local ID.
     if (empty($id)) {
       unset($entity->{$id_key});
+      $entity->is_new = TRUE;
     }
     else {
       $entity->{$id_key} = $id;
+      $entity->is_new = FALSE;
     }
 
     if (!empty($info['entity keys']['revision uuid'])) {
@@ -231,14 +251,22 @@ function entity_uuid_save($entity_type, $entity) {
       $vid = NULL;
       // Fetch the local revision ID by its UUID.
       if (isset($entity->{$vuuid_key})) {
-        $vid = reset(entity_get_id_by_uuid($entity_type, array($entity->{$vuuid_key}), TRUE));
+        $vids = entity_get_id_by_uuid($entity_type, array($entity->{$vuuid_key}), TRUE);
+        $vid = reset($vids);
       }
-      if (empty($vid)) {
+      if (empty($vid) && isset($entity->{$vid_key})) {
         unset($entity->{$vid_key});
-        $entity->revision = TRUE;
       }
-      else {
+      elseif (!empty($vid)) {
         $entity->{$vid_key} = $vid;
+      }
+      // Nodes need this when trying to save an existing node without a vid.
+      if ($entity_type == 'node' && !isset($entity->vid) && !$entity->is_new) {
+        $entity->vid = db_select('node', 'n')
+          ->condition('n.nid', $entity->nid)
+          ->fields('n', array('vid'))
+          ->execute()
+          ->fetchField();
       }
     }
 
@@ -250,20 +278,46 @@ function entity_uuid_save($entity_type, $entity) {
         $function($entity, $entity_type);
       }
     }
+  }
+  else {
+    throw new UuidEntityException(t('Trying to operate on a @type entity, which doesn\'t support UUIDs.', array('@type' => $info['label'])));
+  }
+}
 
-    // Save the entity.
-    entity_save($entity_type, $entity);
+/**
+ * Permanently delete the given entity by its UUID.
+ *
+ * This function depends on the Entity API module to provide the
+ * 'entity_delete()' function.
+ *
+ * @see entity_delete()
+ */
+function entity_uuid_delete($entity_type, $uuid) {
+  // This function, and this function only, depends on the entity module.
+  if (!module_exists('entity')) {
+    throw new UuidEntityException(t('Calling %function requires the Entity API module (!link).', array('%function' => __FUNCTION__, '!link' => 'http://drupal.org/project/entity')));
+  }
 
-    $hook = 'entity_uuid_save';
+  $info = entity_get_info($entity_type);
+  if (isset($info['uuid']) && $info['uuid'] == TRUE) {
+    // Fetch the local ID by its UUID.
+    $ids = entity_get_id_by_uuid($entity_type, array($uuid));
+    $id = reset($ids);
+
+    // Let other modules transform UUID references to local ID references.
+    $hook = 'entity_uuid_delete';
     foreach (module_implements($hook) as $module) {
       $function = $module . '_' . $hook;
       if (function_exists($function)) {
         $function($entity, $entity_type);
       }
     }
+
+    // Delete the entity.
+    return entity_delete($entity_type, $id);
   }
   else {
-    throw new UuidEntityException(t('Trying to save a @type entity, which doesn\'t support UUIDs.', array('@type' => $info['label'])));
+    throw new UuidEntityException(t('Trying to delete a @type entity, which doesn\'t support UUIDs.', array('@type' => $info['label'])));
   }
 }
 

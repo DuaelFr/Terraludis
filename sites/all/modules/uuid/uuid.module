@@ -63,6 +63,15 @@ function uuid_menu() {
 }
 
 /**
+ * Implements of hook_ctools_plugin_directory().
+ */
+function uuid_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools') {
+    return 'plugins/' . $plugin;
+  }
+}
+
+/**
  * Implements of hook_permission().
  */
 function uuid_permission() {
@@ -71,6 +80,32 @@ function uuid_permission() {
       'title' => t('Administer UUID'),
       'description' => t('Allows configuration of the UUID module and APIs.'),
     ),
+  );
+}
+
+/**
+ * Helper function that returns a schema field definition for UUID fields.
+ *
+ * @see uuid_schema_alter()
+ * @see uuid_install()
+ */
+function uuid_schema_field_definition() {
+  return array(
+    'type' => 'char',
+    'length' => 36,
+    'not null' => TRUE,
+    'default' => '',
+    'description' => 'The Universally Unique Identifier.',
+  );
+}
+
+/**
+ * Implementation of hook_views_api().
+ */
+function uuid_views_api() {
+  return array(
+    'api' => 2,
+    'path' => drupal_get_path('module', 'uuid'),
   );
 }
 
@@ -136,16 +171,13 @@ function _uuid_sync_table($table, $id_field, $uuid_field) {
  * identify all dependencies for all entities.
  */
 function uuid_features_api() {
-  if (module_exists('deploy')) {
-    return array(
-      'uuid_entities' => array(
-        'name' => t('UUID entities'),
-        'default_hook' => 'uuid_default_entities',
-        'default_file' => FEATURES_DEFAULTS_INCLUDED_COMMON,
-        'features_source' => TRUE,
-        'file' => drupal_get_path('module', 'uuid') .'/uuid.features.inc',
-      ),
-    );
-  }
-  return array();
+  return array(
+    'uuid_entities' => array(
+      'name' => t('UUID entities'),
+      'default_hook' => 'uuid_default_entities',
+      'default_file' => FEATURES_DEFAULTS_INCLUDED,
+      'features_source' => TRUE,
+      'file' => drupal_get_path('module', 'uuid') .'/uuid.features.inc',
+    ),
+  );
 }

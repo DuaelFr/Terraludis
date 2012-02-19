@@ -10,3 +10,55 @@ function tl_hacks_form_user_login_block_alter(&$form) {
   $form['actions']['#weight'] = 3;
   $form['links']['#weight'] = 4;
 }
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function tl_hacks_field_formatter_info() {
+  return array(
+    'tl_hacks_list_icons' => array(
+      'label' => t('Universes icons'),
+      'field types' => array('group'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function tl_hacks_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+
+  if ($field['field_name'] == OG_AUDIENCE_FIELD && !empty($items[0])) {
+    foreach ($items as $delta => $item) {
+      if ($group = og_get_group('group', $item['gid'])) {
+        if ($group->access()) {
+          $label = og_label($group->gid);
+          $entity = entity_load($group->entity_type, array($group->etid));
+          $entity = current($entity);
+          // Get the entity type of the group entity.
+          $uri = entity_uri($group->entity_type, $entity);
+          $element[$delta] = array(
+            '#type' => 'link',
+            '#title' => var_export($entity->field_icon, true),
+            '#href' => $uri['path'],
+          );
+        }
+        else {
+          // No need to show private groups several times, so remember if it was
+          // already added.
+          $added = &drupal_static(__FUNCTION__, FALSE);
+
+          if (!$added) {
+            $added = TRUE;
+            $element[$delta] = array(
+              '#markup' => '- ' . t('Private group') . ' -',
+            );
+          }
+        }
+      }
+    }
+  }
+
+  return $element;
+}
