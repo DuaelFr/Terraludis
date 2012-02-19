@@ -27,6 +27,7 @@ function wysiwyg_ckeditor_editor() {
         ),
       ),
     ),
+    'install note callback' => 'wysiwyg_ckeditor_install_note',
     'version callback' => 'wysiwyg_ckeditor_version',
     'themes callback' => 'wysiwyg_ckeditor_themes',
     'settings callback' => 'wysiwyg_ckeditor_settings',
@@ -46,6 +47,13 @@ function wysiwyg_ckeditor_editor() {
     ),
   );
   return $editor;
+}
+
+/**
+ * Return an install note.
+ */
+function wysiwyg_ckeditor_install_note() {
+  return '<p class="warning">' . t('Do NOT download the "CKEditor for Drupal" edition.') . '</p>';
 }
 
 /**
@@ -184,7 +192,7 @@ function wysiwyg_ckeditor_settings($editor, $config, $theme) {
     $settings['language'] = $config['language'];
   }
   if (isset($config['resizing'])) {
-    // CKEditor tests "!== false", so ensure it is a Boolean.
+    // CKEditor performs a type-agnostic comparison on this particular setting.
     $settings['resize_enabled'] = (bool) $config['resizing'];
   }
   if (isset($config['toolbar_loc'])) {
@@ -294,6 +302,7 @@ function wysiwyg_ckeditor_plugins($editor) {
         'Bold' => t('Bold'), 'Italic' => t('Italic'), 'Underline' => t('Underline'),
         'Strike' => t('Strike-through'),
         'JustifyLeft' => t('Align left'), 'JustifyCenter' => t('Align center'), 'JustifyRight' => t('Align right'), 'JustifyBlock' => t('Justify'),
+        'BidiLtr' => t('Left-to-right'), 'BidiRtl' => t('Right-to-left'),
         'BulletedList' => t('Bullet list'), 'NumberedList' => t('Numbered list'),
         'Outdent' => t('Outdent'), 'Indent' => t('Indent'),
         'Undo' => t('Undo'), 'Redo' => t('Redo'),
@@ -324,6 +333,10 @@ function wysiwyg_ckeditor_plugins($editor) {
 
   if (version_compare($editor['installed version'], '3.1.0.4885', '<')) {
     unset($plugins['default']['buttons']['CreateDiv']);
+  }
+  if (version_compare($editor['installed version'], '3.4.0.5808', '<')) {
+    unset($plugins['default']['buttons']['BidiLtr']);
+    unset($plugins['default']['buttons']['BidiRtl']);
   }
   if (version_compare($editor['installed version'], '3.5.0.6260', '<')) {
     unset($plugins['default']['buttons']['Iframe']);

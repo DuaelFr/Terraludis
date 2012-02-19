@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the TL Config Editor feature.
+ */
+
+include_once('tl_config_editor.features.inc');
