@@ -22,27 +22,44 @@ function tl_actualites_views_default_views() {
 
   /* Display: Master */
   $handler = $view->new_display('default', 'Master', 'default');
-  $handler->display->display_options['title'] = 'Actualités';
+  $handler->display->display_options['title'] = 'Toutes les Actualités';
   $handler->display->display_options['use_more_text'] = 'plus';
   $handler->display->display_options['access']['type'] = 'perm';
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
+  $handler->display->display_options['query']['options']['distinct'] = TRUE;
   $handler->display->display_options['query']['options']['query_comment'] = FALSE;
-  $handler->display->display_options['exposed_form']['type'] = 'basic';
+  $handler->display->display_options['exposed_form']['type'] = 'better_exposed_filters';
   $handler->display->display_options['exposed_form']['options']['reset_button_label'] = 'Réinitialiser';
   $handler->display->display_options['exposed_form']['options']['exposed_sorts_label'] = 'Trier par';
+  $handler->display->display_options['exposed_form']['options']['autosubmit'] = 1;
+  $handler->display->display_options['exposed_form']['options']['autosubmit_hide'] = 1;
+  $handler->display->display_options['exposed_form']['options']['bef'] = array(
+    'group' => array(
+      'bef_format' => 'bef',
+      'more_options' => array(
+        'bef_select_all_none' => 0,
+        'bef_collapsible' => 0,
+        'bef_filter_description' => '',
+      ),
+    ),
+  );
   $handler->display->display_options['pager']['type'] = 'full';
   $handler->display->display_options['pager']['options']['expose']['items_per_page_label'] = 'Éléments par page';
   $handler->display->display_options['pager']['options']['expose']['items_per_page_options_all_label'] = '- Tout -';
   $handler->display->display_options['pager']['options']['expose']['offset_label'] = 'Décalage';
   $handler->display->display_options['style_plugin'] = 'list';
-  $handler->display->display_options['style_options']['group_rendered'] = 1;
   $handler->display->display_options['row_plugin'] = 'fields';
   /* Relation: Contenu : Auteur */
   $handler->display->display_options['relationships']['uid']['id'] = 'uid';
   $handler->display->display_options['relationships']['uid']['table'] = 'node';
   $handler->display->display_options['relationships']['uid']['field'] = 'uid';
   $handler->display->display_options['relationships']['uid']['required'] = 1;
+  /* Relation: Abonnement OG : OG membership from Nœud */
+  $handler->display->display_options['relationships']['og_membership_rel']['id'] = 'og_membership_rel';
+  $handler->display->display_options['relationships']['og_membership_rel']['table'] = 'node';
+  $handler->display->display_options['relationships']['og_membership_rel']['field'] = 'og_membership_rel';
+  $handler->display->display_options['relationships']['og_membership_rel']['required'] = 0;
   /* Champ: Contenu : Titre */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
@@ -191,6 +208,36 @@ function tl_actualites_views_default_views() {
   $handler->display->display_options['fields']['field_news_links']['delta_reversed'] = 0;
   $handler->display->display_options['fields']['field_news_links']['delta_first_last'] = 0;
   $handler->display->display_options['fields']['field_news_links']['field_api_classes'] = 0;
+  /* Champ: Contenu : Audience de groupes */
+  $handler->display->display_options['fields']['group_audience']['id'] = 'group_audience';
+  $handler->display->display_options['fields']['group_audience']['table'] = 'field_data_group_audience';
+  $handler->display->display_options['fields']['group_audience']['field'] = 'group_audience';
+  $handler->display->display_options['fields']['group_audience']['label'] = '';
+  $handler->display->display_options['fields']['group_audience']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['group_audience']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['group_audience']['alter']['absolute'] = 0;
+  $handler->display->display_options['fields']['group_audience']['alter']['external'] = 0;
+  $handler->display->display_options['fields']['group_audience']['alter']['replace_spaces'] = 0;
+  $handler->display->display_options['fields']['group_audience']['alter']['trim_whitespace'] = 0;
+  $handler->display->display_options['fields']['group_audience']['alter']['nl2br'] = 0;
+  $handler->display->display_options['fields']['group_audience']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['group_audience']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['group_audience']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['group_audience']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['group_audience']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['group_audience']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['group_audience']['element_default_classes'] = 1;
+  $handler->display->display_options['fields']['group_audience']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['group_audience']['empty_zero'] = 0;
+  $handler->display->display_options['fields']['group_audience']['hide_alter_empty'] = 1;
+  $handler->display->display_options['fields']['group_audience']['click_sort_column'] = 'gid';
+  $handler->display->display_options['fields']['group_audience']['type'] = 'tl_hacks_list_icons';
+  $handler->display->display_options['fields']['group_audience']['group_rows'] = 1;
+  $handler->display->display_options['fields']['group_audience']['delta_offset'] = '0';
+  $handler->display->display_options['fields']['group_audience']['delta_reversed'] = 0;
+  $handler->display->display_options['fields']['group_audience']['delta_first_last'] = 0;
+  $handler->display->display_options['fields']['group_audience']['multi_type'] = 'ul';
+  $handler->display->display_options['fields']['group_audience']['field_api_classes'] = 0;
   /* Critère de tri: Contenu : Épinglé (en haut des listes) */
   $handler->display->display_options['sorts']['sticky']['id'] = 'sticky';
   $handler->display->display_options['sorts']['sticky']['table'] = 'node';
@@ -215,6 +262,19 @@ function tl_actualites_views_default_views() {
   $handler->display->display_options['filters']['type']['value'] = array(
     'actualite' => 'actualite',
   );
+  /* Critère de filtrage: Abonnement OG : Groupe OG gid */
+  $handler->display->display_options['filters']['group']['id'] = 'group';
+  $handler->display->display_options['filters']['group']['table'] = 'og_membership';
+  $handler->display->display_options['filters']['group']['field'] = 'group';
+  $handler->display->display_options['filters']['group']['relationship'] = 'og_membership_rel';
+  $handler->display->display_options['filters']['group']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['group']['expose']['operator_id'] = 'group_op';
+  $handler->display->display_options['filters']['group']['expose']['label'] = 'Groupe OG gid';
+  $handler->display->display_options['filters']['group']['expose']['operator'] = 'group_op';
+  $handler->display->display_options['filters']['group']['expose']['identifier'] = 'group';
+  $handler->display->display_options['filters']['group']['expose']['multiple'] = 1;
+  $handler->display->display_options['filters']['group']['expose']['reduce'] = 0;
+  $handler->display->display_options['filters']['group']['reduce_duplicates'] = 1;
 
   /* Display: Liste (Page) */
   $handler = $view->new_display('page', 'Liste (Page)', 'list');
@@ -223,17 +283,15 @@ function tl_actualites_views_default_views() {
   $handler->display->display_options['arguments']['field_news_type_value']['id'] = 'field_news_type_value';
   $handler->display->display_options['arguments']['field_news_type_value']['table'] = 'field_data_field_news_type';
   $handler->display->display_options['arguments']['field_news_type_value']['field'] = 'field_news_type_value';
+  $handler->display->display_options['arguments']['field_news_type_value']['title_enable'] = 1;
+  $handler->display->display_options['arguments']['field_news_type_value']['title'] = '%1';
   $handler->display->display_options['arguments']['field_news_type_value']['default_argument_type'] = 'fixed';
   $handler->display->display_options['arguments']['field_news_type_value']['default_argument_skip_url'] = 0;
   $handler->display->display_options['arguments']['field_news_type_value']['summary']['number_of_records'] = '0';
   $handler->display->display_options['arguments']['field_news_type_value']['summary']['format'] = 'default_summary';
   $handler->display->display_options['arguments']['field_news_type_value']['summary_options']['items_per_page'] = '25';
-  $handler->display->display_options['arguments']['field_news_type_value']['glossary'] = 0;
-  $handler->display->display_options['arguments']['field_news_type_value']['limit'] = '0';
-  $handler->display->display_options['arguments']['field_news_type_value']['path_case'] = 'lower';
-  $handler->display->display_options['arguments']['field_news_type_value']['transform_dash'] = 1;
   $handler->display->display_options['arguments']['field_news_type_value']['break_phrase'] = 0;
-  $handler->display->display_options['path'] = 'actualites/%';
+  $handler->display->display_options['path'] = 'actualites';
 
   /* Display: Accueil (Bloc) */
   $handler = $view->new_display('block', 'Accueil (Bloc)', 'block');
@@ -241,8 +299,6 @@ function tl_actualites_views_default_views() {
   $handler->display->display_options['title'] = 'Dernières Actualités';
   $handler->display->display_options['defaults']['use_more'] = FALSE;
   $handler->display->display_options['use_more'] = TRUE;
-  $handler->display->display_options['use_more_always'] = TRUE;
-  $handler->display->display_options['use_more_text'] = 'plus';
   $handler->display->display_options['defaults']['pager'] = FALSE;
   $handler->display->display_options['pager']['type'] = 'some';
   $handler->display->display_options['pager']['options']['items_per_page'] = '5';
@@ -359,7 +415,7 @@ function tl_actualites_views_default_views() {
   $handler->display->display_options['filters']['promote']['value'] = '1';
   $translatables['actualites'] = array(
     t('Master'),
-    t('Actualités'),
+    t('Toutes les Actualités'),
     t('plus'),
     t('Appliquer'),
     t('Réinitialiser'),
@@ -370,8 +426,11 @@ function tl_actualites_views_default_views() {
     t('- Tout -'),
     t('Décalage'),
     t('auteur'),
+    t('OG membership from node'),
+    t('Groupe OG gid'),
     t('Liste (Page)'),
     t('Tous / Toutes'),
+    t('%1'),
     t('Accueil (Bloc)'),
     t('Dernières Actualités'),
   );

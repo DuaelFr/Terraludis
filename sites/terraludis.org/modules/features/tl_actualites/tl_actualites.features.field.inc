@@ -249,6 +249,7 @@ function tl_actualites_field_default_fields() {
             'delete' => 'Supprimer',
             'description' => TRUE,
             'edit' => 'Modifier',
+            'view_mode' => 'full',
           ),
           'type' => 'field_collection_view',
           'weight' => 3,
@@ -480,11 +481,11 @@ function tl_actualites_field_default_fields() {
         ),
       ),
       'widget' => array(
-        'module' => 'og',
+        'module' => 'og_checkboxes',
         'settings' => array(
           'opt_group' => 'auto',
         ),
-        'type' => 'group_audience',
+        'type' => 'og_checkboxes_audience_widget',
         'weight' => '5',
       ),
       'widget_type' => 'group_audience',
