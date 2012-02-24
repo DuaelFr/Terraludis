@@ -21,7 +21,7 @@ function tl_univers_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'Paramètres du groupe',
-    'weight' => '2',
+    'weight' => '3',
     'children' => array(
       0 => 'field_group_type',
       1 => 'group_access',
