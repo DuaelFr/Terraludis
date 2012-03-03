@@ -4,3 +4,15 @@ sites/*/settings*.php
 # Ignore paths that contain user-generated content.
 sites/*/files
 sites/*/private
+
+# Ignore tmp files
+tmp/*
+!tmp/.htaccess
+
+# Ignore eclipse files
+.buildpath
+.project
+.settings
+
+# Ignore OS-X files
+.DS_Store
