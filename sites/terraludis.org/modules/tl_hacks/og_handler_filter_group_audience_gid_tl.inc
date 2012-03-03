@@ -1,6 +1,9 @@
 <?php
 /**
  * Filter handler for group audience:gid
+ * 
+ * In views interface : show multiselect with group names
+ * In exposed filter : show checkboxes with group icons
  */
 class og_handler_filter_group_audience_gid_tl extends views_handler_filter_many_to_one {
   
