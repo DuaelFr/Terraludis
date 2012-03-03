@@ -65,7 +65,7 @@ stylesheets-conditional[lte IE 6][all][]  = css/ie6.css
 
 ; Optionally add some JavaScripts to your theme.
 
-;scripts[] = js/scripts.js
+scripts[] = js/scripts.js
 
 
 
