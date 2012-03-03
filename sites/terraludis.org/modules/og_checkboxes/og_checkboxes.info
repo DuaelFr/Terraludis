@@ -1,0 +1,6 @@
+name = Organic groups checkboxes
+description = Allows you to use checkboxes as a widget for the Group audience field
+core = 7.x
+package = "Organic groups"
+
+dependencies[] = og
