@@ -1,5 +1,9 @@
 <?php
 
+////////////////////////////////////////////////////////////////////////////////
+// LOGIN FORM
+////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Modification de l'ordre des éléments du formulaire de login
  * @param array $form
@@ -10,6 +14,10 @@ function tl_hacks_form_user_login_block_alter(&$form) {
   $form['actions']['#weight'] = 3;
   $form['links']['#weight'] = 4;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// ACTUALITES
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Implements hook_field_formatter_info().
@@ -36,12 +44,24 @@ function tl_hacks_field_formatter_view($entity_type, $entity, $field, $instance,
           $label = og_label($group->gid);
           $entity = entity_load($group->entity_type, array($group->etid));
           $entity = current($entity);
+          
+          $flang = field_language('node', $entity, 'field_group_type');
+          if ($entity->field_group_type[$flang][0]['value'] != 'univers') continue;
+          
           // Get the entity type of the group entity.
           $uri = entity_uri($group->entity_type, $entity);
+          $flang = field_language('node', $entity, 'field_icon');
+          $imageData = array(
+            'style_name' => 'universe_icon',
+            'path' => !empty($entity->field_icon) ? $entity->field_icon[$flang][0]['filename'] : _tl_hacks_get_default_icon_uri(),
+            'alt' => check_plain($entity->title),
+            'title' => check_plain($entity->title),
+          );
           $element[$delta] = array(
             '#type' => 'link',
-            '#title' => var_export($entity->field_icon, true),
+            '#title' => theme('image_style', $imageData),
             '#href' => $uri['path'],
+            '#options' => array('html' => TRUE,),
           );
         }
         else {
@@ -61,4 +81,24 @@ function tl_hacks_field_formatter_view($entity_type, $entity, $field, $instance,
   }
 
   return $element;
+}
+
+/**
+ * Get default icon uri
+ */
+function _tl_hacks_get_default_icon_uri() {
+  $uri = &drupal_static(__FUNCTION__);
+  if (empty($uri)) {
+    $field = field_info_field('field_icon');
+    $file = file_load($field['settings']['default_image']);
+    $uri = $file->uri;    
+  }
+  return $uri;
+}
+
+/**
+ * Implements hook_views_data_alter().
+ */
+function tl_hacks_views_data_alter(&$data) {
+  $data['og_membership']['group']['filter']['handler'] = 'og_handler_filter_group_audience_gid_tl';
 }

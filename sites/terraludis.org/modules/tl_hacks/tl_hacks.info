@@ -4,3 +4,4 @@ package = Terraludis
 core = 7.x
 
 files[] = tl_hacks.module
+files[] = og_handler_filter_group_audience_gid_tl.inc
