@@ -29,27 +29,26 @@ function tl_actualites_views_default_views() {
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['query']['options']['distinct'] = TRUE;
   $handler->display->display_options['query']['options']['query_comment'] = FALSE;
-  $handler->display->display_options['exposed_form']['type'] = 'better_exposed_filters';
+  $handler->display->display_options['exposed_form']['type'] = 'basic';
   $handler->display->display_options['exposed_form']['options']['reset_button_label'] = 'Réinitialiser';
   $handler->display->display_options['exposed_form']['options']['exposed_sorts_label'] = 'Trier par';
   $handler->display->display_options['exposed_form']['options']['autosubmit'] = 1;
   $handler->display->display_options['exposed_form']['options']['autosubmit_hide'] = 1;
-  $handler->display->display_options['exposed_form']['options']['bef'] = array(
-    'group' => array(
-      'bef_format' => 'bef',
-      'more_options' => array(
-        'bef_select_all_none' => 0,
-        'bef_collapsible' => 0,
-        'bef_filter_description' => '',
-      ),
-    ),
-  );
   $handler->display->display_options['pager']['type'] = 'full';
   $handler->display->display_options['pager']['options']['expose']['items_per_page_label'] = 'Éléments par page';
   $handler->display->display_options['pager']['options']['expose']['items_per_page_options_all_label'] = '- Tout -';
   $handler->display->display_options['pager']['options']['expose']['offset_label'] = 'Décalage';
   $handler->display->display_options['style_plugin'] = 'list';
   $handler->display->display_options['row_plugin'] = 'fields';
+  /* Comportement en l'absence de résultats: Global : Zone de texte */
+  $handler->display->display_options['empty']['area']['id'] = 'area';
+  $handler->display->display_options['empty']['area']['table'] = 'views';
+  $handler->display->display_options['empty']['area']['field'] = 'area';
+  $handler->display->display_options['empty']['area']['label'] = 'Vide';
+  $handler->display->display_options['empty']['area']['empty'] = FALSE;
+  $handler->display->display_options['empty']['area']['content'] = 'Aucune actualité n\'a été publiée dans cet Univers.';
+  $handler->display->display_options['empty']['area']['format'] = 'full_html';
+  $handler->display->display_options['empty']['area']['tokenize'] = 0;
   /* Relation: Contenu : Auteur */
   $handler->display->display_options['relationships']['uid']['id'] = 'uid';
   $handler->display->display_options['relationships']['uid']['table'] = 'node';
@@ -267,14 +266,24 @@ function tl_actualites_views_default_views() {
   $handler->display->display_options['filters']['group']['table'] = 'og_membership';
   $handler->display->display_options['filters']['group']['field'] = 'group';
   $handler->display->display_options['filters']['group']['relationship'] = 'og_membership_rel';
+  $handler->display->display_options['filters']['group']['value'] = array(
+    2 => '2',
+    3 => '3',
+    4 => '4',
+    5 => '5',
+    6 => '6',
+    7 => '7',
+    8 => '8',
+    9 => '9',
+  );
   $handler->display->display_options['filters']['group']['exposed'] = TRUE;
   $handler->display->display_options['filters']['group']['expose']['operator_id'] = 'group_op';
   $handler->display->display_options['filters']['group']['expose']['label'] = 'Groupe OG gid';
   $handler->display->display_options['filters']['group']['expose']['operator'] = 'group_op';
   $handler->display->display_options['filters']['group']['expose']['identifier'] = 'group';
   $handler->display->display_options['filters']['group']['expose']['multiple'] = 1;
-  $handler->display->display_options['filters']['group']['expose']['reduce'] = 0;
-  $handler->display->display_options['filters']['group']['reduce_duplicates'] = 1;
+  $handler->display->display_options['filters']['group']['expose']['reduce'] = 1;
+  $handler->display->display_options['filters']['group']['reduce_duplicates'] = 0;
 
   /* Display: Liste (Page) */
   $handler = $view->new_display('page', 'Liste (Page)', 'list');
@@ -425,6 +434,8 @@ function tl_actualites_views_default_views() {
     t('Éléments par page'),
     t('- Tout -'),
     t('Décalage'),
+    t('Vide'),
+    t('Aucune actualité n\'a été publiée dans cet Univers.'),
     t('auteur'),
     t('OG membership from node'),
     t('Groupe OG gid'),
