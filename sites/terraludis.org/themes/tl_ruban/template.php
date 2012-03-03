@@ -181,7 +181,7 @@ function tl_ruban_select_as_checkboxes($vars) {
     unset($element['#description']);
   }
 
-  $output = '<div class="bef-checkboxes">';
+  $output = '<div class="tl-checkboxes bef-checkboxes">';
   foreach ($element['#options'] as $option => $elem) {
     if ('All' === $option) {
       // TODO: 'All' text is customizable in Views

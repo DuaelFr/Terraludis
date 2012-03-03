@@ -17,7 +17,26 @@ $(window).load(function(){
  */
 (function($) {
 $(window).load(function(){
-  $('.views-widget-filter-group input').hide()
-  .filter(':checked').next().addClass('active');
+  var inputs = $('.views-widget-filter-group input'),
+      d = $('<div class="views-widget-all-any"></div>'),
+	  all = $('<a href="javascript:void(0);">Tous</a>'),
+	  any = $('<a href="javascript:void(0);">Aucun</a>');
+
+  inputs.hide()
+        .filter(':checked').next().addClass('active');
+  inputs.next().click(function() { $(this).toggleClass('active'); });
+
+  d.append(all).append(any);
+  $('.views-widget-filter-group .views-widget').append(d);
+  all.click(function() {
+    inputs.attr('checked', true)
+          .next().addClass('active')
+          .end().trigger('change');
+  });
+  any.click(function() {
+	  inputs.removeAttr('checked')
+	        .next().removeClass('active')
+	        .end().trigger('change');
+  });
 });
 })(jQuery);

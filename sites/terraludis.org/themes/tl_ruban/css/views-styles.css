@@ -3,4 +3,26 @@
  * Views Styling
  */
 
+/*******************************************************************************
+ * STYLES GENERIQUES
+ ******************************************************************************/
 
+/* Formulaire de filtre exposé */
+.views-exposed-form {}
+.views-widget-filter-group { overflow: hidden; }
+.views-widget-filter-group label { float: left; line-height: 30px; opacity: .5; }
+.views-widget-filter-group label.active { opacity: 1; }
+.views-widget-filter-group .views-widget { float: left; }
+.views-widget-filter-group .form-item { float: left; }
+.views-widget-filter-group .views-widget-all-any { float: left; }
+.views-widget-filter-group .views-widget-all-any a { display: block; }
+
+
+/*******************************************************************************
+ * ACTUALITES
+ ******************************************************************************/
+
+.view-actualites {}
+
+/* Display : Liste des actualités (Page) */
+.view-actualites.view-display-id-list {}
