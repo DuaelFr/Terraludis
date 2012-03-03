@@ -834,7 +834,7 @@ function ctools_var_export($var, $prefix = '') {
     // magic method __set_state() leaving the export broken. This
     // workaround avoids this by casting the object as an array for
     // export and casting it back to an object when evaluated.
-    $output .= '(object) ' . ctools_var_export((array) $var, $prefix);
+    $output = '(object) ' . ctools_var_export((array) $var, $prefix);
   }
   else if (is_bool($var)) {
     $output = $var ? 'TRUE' : 'FALSE';
