@@ -29,6 +29,37 @@ function tl_univers_views_api() {
 }
 
 /**
+ * Implements hook_image_default_styles().
+ */
+function tl_univers_image_default_styles() {
+  $styles = array();
+
+  // Exported image style: universe_icon
+  $styles['universe_icon'] = array(
+    'name' => 'universe_icon',
+    'effects' => array(
+      1 => array(
+        'label' => 'Mise à l\'échelle et recadrage',
+        'help' => 'La mise à l\'échelle et le recadrage maintiendront les proportions originales de l\'image puis recadreront la dimension la plus large. C\'est très utile pour créer des vignettes carrées sans étirer les images.',
+        'effect callback' => 'image_scale_and_crop_effect',
+        'dimensions callback' => 'image_resize_dimensions',
+        'form callback' => 'image_resize_form',
+        'summary theme' => 'image_resize_summary',
+        'module' => 'image',
+        'name' => 'image_scale_and_crop',
+        'data' => array(
+          'width' => '30',
+          'height' => '30',
+        ),
+        'weight' => '1',
+      ),
+    ),
+  );
+
+  return $styles;
+}
+
+/**
  * Implements hook_node_info().
  */
 function tl_univers_node_info() {
