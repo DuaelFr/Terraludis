@@ -32,6 +32,24 @@ function tl_context_global_context_default_contexts() {
           'region' => 'sidebar_first',
           'weight' => '-10',
         ),
+        'views-groupes-block_universe' => array(
+          'module' => 'views',
+          'delta' => 'groupes-block_universe',
+          'region' => 'sidebar_first',
+          'weight' => '-9',
+        ),
+        'user-online' => array(
+          'module' => 'user',
+          'delta' => 'online',
+          'region' => 'sidebar_first',
+          'weight' => '-8',
+        ),
+        'shoutbox-shoutbox' => array(
+          'module' => 'shoutbox',
+          'delta' => 'shoutbox',
+          'region' => 'sidebar_first',
+          'weight' => '-7',
+        ),
         'logintoboggan-logintoboggan_logged_in' => array(
           'module' => 'logintoboggan',
           'delta' => 'logintoboggan_logged_in',
