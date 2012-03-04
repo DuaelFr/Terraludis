@@ -11,7 +11,7 @@ function tl_univers_uuid_features_default_content() {
   $nodes = array();
 
   $nodes[] = array(
-  'uid' => '1',
+  'uid' => '0',
   'title' => 'Airsoft',
   'log' => '',
   'status' => '1',
@@ -72,9 +72,9 @@ function tl_univers_uuid_features_default_content() {
   'last_comment_name' => NULL,
   'last_comment_uid' => '1',
   'comment_count' => '0',
-  'name' => 'superadmin',
+  'name' => '',
   'picture' => '0',
-  'data' => 'b:0;',
+  'data' => NULL,
   'date' => '2011-10-28 17:19:42 +0200',
 );
   $nodes[] = array(
