@@ -1,0 +1,41 @@
+<?php
+
+/**
+ * Implements hook_shoutbox().
+ */
+function shoutbox_domain_shoutbox($op, &$shout, &$a1 = NULL, $form_state = NULL) {
+  if (module_exists('domain')) {
+    $_domain = domain_get_domain();
+    switch ($op) {
+      case 'insert':
+        if (isset($_domain['domain_id'])) {
+          $record = new stdClass;
+          $record->shout_id = $shout->shout_id;
+          $record->domain_id = $_domain['domain_id'];
+          drupal_write_record('shoutbox_domain', $record);
+        }
+        break;
+
+      case 'delete':
+        db_delete('shoutbox_domain')
+          ->condition('shout_id', $shout->shout_id)
+          ->execute();
+        break;
+    }
+  }
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ */
+function shoutbox_domain_query_shouts_alter(QueryAlterableInterface $query) {
+  if (module_exists('domain')) {
+      $_domain = domain_get_domain();
+      if ($query->hasTag('shouts') && isset($_domain['domain_id'])) {
+        $query->join('shoutbox_domain', 'd', 's.shout_id = d.shout_id');
+        $domain_id = (int) $_domain['domain_id'];
+        $query->condition('d.domain_id', $domain_id, '=');
+      }
+  }
+}
+

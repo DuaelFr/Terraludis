@@ -1,0 +1,21 @@
+; Shoutbox module
+; Originally by benshell;
+; Now maintained by disterics, snpower
+name = Shoutbox
+description = This module enables you to display a shoutbox block and page.
+core = 7.x
+configure = admin/config/shoutbox
+package = Shoutbox
+files[] = shoutbox.api.php
+files[] = shoutbox.install
+files[] = shoutbox.module
+files[] = shoutbox.pages.inc
+files[] = shoutbox.theme.inc
+files[] = shoutbox.test
+
+; Information added by drupal.org packaging script on 2011-09-17
+version = "7.x-1.0-alpha2"
+core = "7.x"
+project = "shoutbox"
+datestamp = "1316239307"
+

@@ -1,0 +1,17 @@
+name = Shoutbox rules
+core = 7.x
+description = Extends shoutbox functionality to Rules
+dependencies[] = shoutbox
+dependencies[] = rules
+dependencies[] = token
+package = Shoutbox
+
+
+files[] = shoutbox_rules.module
+
+; Information added by drupal.org packaging script on 2011-09-17
+version = "7.x-1.0-alpha2"
+core = "7.x"
+project = "shoutbox"
+datestamp = "1316239307"
+

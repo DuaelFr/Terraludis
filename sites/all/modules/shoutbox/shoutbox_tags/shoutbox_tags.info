@@ -1,0 +1,15 @@
+name = Shoutbox tags
+core = 7.x
+description = Offer #tag categorization functionality in Shoutbox
+package = Shoutbox
+dependencies[] = shoutbox
+
+files[] = shoutbox_tags.install
+files[] = shoutbox_tags.module
+
+; Information added by drupal.org packaging script on 2011-09-17
+version = "7.x-1.0-alpha2"
+core = "7.x"
+project = "shoutbox"
+datestamp = "1316239307"
+
