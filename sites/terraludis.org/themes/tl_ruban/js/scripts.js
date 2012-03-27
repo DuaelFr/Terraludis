@@ -40,3 +40,16 @@ $(window).load(function(){
   });
 });
 })(jQuery);
+
+/**
+ * Cache/Affiche la liste des univers
+ * @todo Optimiser
+ */
+(function($) {
+$(window).load(function(){
+  $('#block-views-groupes-block-universe .block-title').click(function() {
+	$(this).toggleClass('collapsed')
+		   .parent().find('.content').slideToggle();
+  }).addClass('collapsed');
+});
+})(jQuery);

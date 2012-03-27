@@ -88,6 +88,7 @@ body {
   width: 700px;
   margin-left: 250px; /* LTR */ /* The width of .region-sidebar-first. */
   margin-right: -960px; /* LTR */ /* Negative value of #content's width + left margin. */
+  margin-top: 10px;
   padding-right: 10px;
 }
 

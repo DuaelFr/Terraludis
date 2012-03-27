@@ -106,3 +106,23 @@ h2.block-title /* Block title */ {
 
 #block-user-online /* "Who's online" block for a list of the online users */ {
 }
+#block-user-online .content p {
+	display: none;
+}
+
+.region-sidebar-first .block-title {
+	text-align: center;
+}
+
+#block-views-groupes-block-universe /* Liste de sunivers */ {}
+#block-views-groupes-block-universe .block-title { cursor: pointer; }
+#block-views-groupes-block-universe .block-title:after { content: "▼"; }
+#block-views-groupes-block-universe .content { display: none; }
+#block-views-groupes-block-universe .content ul { padding: 0; }
+#block-views-groupes-block-universe .content li { list-style: none; }
+
+#block-views-evenements-block-1 { float: right; width: 49%; }
+#block-views-actualites-block { width: 49%; }
+
+#block-shoutbox-shoutbox {}
+#block-shoutbox-shoutbox form .shoutbox-msg { display: none; }
