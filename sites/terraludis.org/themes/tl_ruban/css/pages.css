@@ -29,9 +29,11 @@ body {
  */
 a {
 	color: #336633;
+	text-decoration: none;
 }
 a:hover, a:active {
-	color: #99cc33;
+	color: #336633;
+	text-decoration: underline overline;
 }
 
 #user-login-form a, #user-login-form a:visited, #block-logintoboggan-logintoboggan-logged-in a, #block-logintoboggan-logintoboggan-logged-in a:visited {
@@ -113,7 +115,7 @@ div#site-name /* The name of the website */ {
 	width: 390px;
 	height: 60px;
 	margin-left: 315px;
-	padding-top: 50px;
+	padding-top: 70px;
 }
 .region-header2 /* Contient la recherche */ {
 	float: right;
@@ -292,12 +294,10 @@ ul.links li {
 	display: inline;
 }
 #footer-content a, #footer-content a:visited, #footer-content a.active, #footer-content a.active:visited {
-	text-decoration: none;
 	color: black;
 	padding: 0 15px;
 }
 #footer-content a:hover, #footer-content a:focus, #footer-content a.active:hover, #footer-content a.active:focus {
-	text-decoration: none;
 	color: white;
 }
 

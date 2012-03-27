@@ -92,6 +92,9 @@
   text-align: left; /* LTR */
 }
 
+#block-user-login h2.block-title {
+	display: none;
+}
 
 /*
  * OpenID
@@ -175,9 +178,10 @@ html.js #user-login-form li.openid-link,
 
 
 #block-logintoboggan-logintoboggan-logged-in {
+	float: right;
 	width: 190px;
-	height: 26px;
-	margin: 40px 0 0 200px;
+	height: 31px;
+	margin: 35px 0 0 0;
 }
 
 
