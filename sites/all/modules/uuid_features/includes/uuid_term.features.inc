@@ -5,15 +5,6 @@
  */
 
 /**
- * Get term id from its uuid
- * @param string $uuid
- */
-function uuid_taxonomy_term_find($uuid) {
-  $ids = entity_get_id_by_uuid('taxonomy_term', array($uuid));
-  return array_key_exists($uuid, $ids) ? $ids[$uuid] : FALSE;
-}
-
-/**
  * Implements hook_features_export_options().
  */
 function uuid_term_features_export_options() {
@@ -35,32 +26,52 @@ function uuid_term_features_export_options() {
  * Implements hook_features_export().
  */
 function uuid_term_features_export($data, &$export, $module_name = '') {
-  $pipe = array();
-
   $export['dependencies']['taxonomy'] = 'taxonomy';
   $export['dependencies']['uuid'] = 'uuid';
   $export['dependencies']['uuid_features'] = 'uuid_features';
 
   foreach ($data as $uuid) {
+    uuid_term_features_get_dependencies($export, $uuid);
+  }
+  return array();
+}
+
+/**
+ * Adds terms and its dependencies to the export.
+ *
+ * Parents and term references are handled recrusively, other references are not
+ * yet supported.
+ */
+function uuid_term_features_get_dependencies(&$export, $uuid) {
+  $terms = entity_uuid_load('taxonomy_term', array($uuid));
+  if (count($terms)) {
+    $term = reset($terms);
     $export['features']['uuid_term'][$uuid] = $uuid;
-
-    // Get the machine name of the term's vocabulary.
-    $voc_machine_name = db_query('SELECT v.machine_name FROM {taxonomy_vocabulary} v
-      INNER JOIN {taxonomy_term_data} t ON t.vid = v.vid
-      WHERE t.uuid = :uuid', array(':uuid' => $uuid))->fetchField();
-
-    // Add the vocab to the pipe
-    $export['features']['taxonomy'][$voc_machine_name] = $voc_machine_name;
-
-    // Get the UUID of the term's parents.
-    $tid = uuid_taxonomy_term_find($uuid);
-    $parents = taxonomy_get_parents($tid);
-    foreach ($parents as $parent) {
-      $export['features']['uuid_term'][$parent->uuid] = $parent->uuid;
+    $export['features']['taxonomy'][$term->vocabulary_machine_name] = $term->vocabulary_machine_name;
+    // Recursively add all parents and the references of the parents.
+    foreach (taxonomy_get_parents($term->tid) as $parent) {
+      if (!in_array($parent->uuid, $export['features']['uuid_term'])) {
+        uuid_term_features_get_dependencies($export, $parent->uuid);
+      }
+    }
+    // Get term references.
+    $instances = field_info_instances('taxonomy_term', $term->vocabulary_machine_name);
+    foreach ($instances as $field_name => $instance) {
+      $field = field_info_field($field_name);
+      if ($field['type'] == 'taxonomy_term_reference') {
+        if (isset($term->$field_name)) {
+          foreach ($term->$field_name as $lang => $values) {
+            foreach ($values as $value) {
+              // $value['tid'] already contains the UUID.
+              if (!in_array($value['tid'], $export['features']['uuid_term'])) {
+                uuid_term_features_get_dependencies($export, $value['tid']);
+              }
+            }
+          }
+        }
+      }
     }
   }
-
-  return $pipe;
 }
 
 /**
@@ -72,36 +83,18 @@ function uuid_term_features_export_render($module = 'foo', $data) {
   $code[] = '  $terms = array();';
   $code[] = '';
   foreach ($data as $uuid) {
-    $tid = uuid_taxonomy_term_find($uuid);
-    $term = taxonomy_term_load($tid);
-    if (!$term) {
+    // @todo reset = TRUE as otherwise references (parent, fields) were destroyed.
+    $terms = entity_uuid_load('taxonomy_term', array($uuid), array(), TRUE);
+    if (!count($terms)) {
       continue;
     }
+    $export = reset($terms);
 
-    $export = array('uuid' => $uuid);
-
-    // Whitelist of term properties.
-    $props = array('name', 'description', 'weight');
-    foreach ($props as $key) {
-      if (isset($term->$key)) {
-        $export[$key] = $term->$key;
-      }
-    }
-
-    // Get the UUID of the term's parent terms.
-    $parents = taxonomy_get_parents($tid);
-    foreach ($parents as $parent) {
-      $export['parent'][] = $parent->uuid;
-    }
-
-    // Get the machine name of the term's vocabulary.
-    /*$voc_machine_name = db_query('SELECT v.machine_name FROM {taxonomy_vocabulary} v
-      INNER JOIN {taxonomy_term_data} t ON t.vid = v.vid
-      WHERE t.vid = :vid', array(':vid' => $term->vid))->fetchField();*/
-    $vocabularies = taxonomy_vocabulary_load_multiple(array($term->vid));
-
-    $export['vocabulary'] = $vocabularies[$term->vid]->machine_name;
-
+    // Do not export ids.
+    unset($export->vid);
+    unset($export->tid);
+    // No need to export the rdf mapping.
+    unset($export->rdf_mapping);
     $code[] = '  $terms[] = ' . features_var_export($export, '  ') . ';';
   }
 
@@ -126,29 +119,34 @@ function uuid_term_features_revert($module) {
  * Rebuilds terms based on UUID from code defaults.
  */
 function uuid_term_features_rebuild($module) {
+  // Import the vocabularies first.
+  taxonomy_features_rebuild($module);
+
   $terms = module_invoke($module, 'uuid_features_default_terms');
   if (!empty($terms)) {
+    // Verify that term objects is saved before any references are resolved.
     foreach ($terms as $data) {
-      $existing = uuid_taxonomy_term_find($data['uuid']);
-
-      if (!empty($existing)) {
-        $data['tid'] = $existing;
-      }
-
-      $vid = db_query('SELECT vid FROM {taxonomy_vocabulary} WHERE machine_name = :machine_name', array(':machine_name' => $data['vocabulary']))->fetchField();
-      if ($vid) {
-        $data['vid'] = $vid;
-
-        if (isset($data['parent']) && is_array($data['parent'])) {
-          foreach ($data['parent'] as $key => $parent_uuid) {
-            $data['parent'][$key] = uuid_taxonomy_term_find($parent_uuid);
-          }
+      $existing = entity_get_id_by_uuid('taxonomy_term', array($data['uuid']));
+      if (!count($existing)) {
+        $voc = taxonomy_vocabulary_machine_name_load($data['vocabulary_machine_name']);
+        // Only save the term, if the corresponding vocabulary already exisits.
+        if ($voc) {
+          $term = new stdClass;
+          $term->uuid = $data['uuid'];
+          $term->vid = $voc->vid;
+          $term->name = $data['name'];
+          taxonomy_term_save($term);
         }
-
-        $term = (object) $data;
-        $ret = taxonomy_term_save($term);
       }
-
+    }
+    // Save all other data and resolve references.
+    foreach ($terms as $data) {
+      $term = (object) $data;
+      $voc = taxonomy_vocabulary_machine_name_load($term->vocabulary_machine_name);
+      if ($voc) {
+        $term->vid = $voc->vid;
+        entity_uuid_save('taxonomy_term', $term);
+      }
     }
   }
 }

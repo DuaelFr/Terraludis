@@ -8,7 +8,7 @@ function uuid_features_features_api() {
 
   $components['uuid_node'] = array(
     'name' => t('Content'),
-    'features_source' => TRUE,
+    'feature_source' => TRUE,
     'default_hook' => 'uuid_features_default_content',
     'default_file' => FEATURES_DEFAULTS_INCLUDED,
     'file' => drupal_get_path('module', 'uuid_features') . '/includes/uuid_node.features.inc',
@@ -16,6 +16,7 @@ function uuid_features_features_api() {
 
   $components['uuid_term'] = array(
     'name' => t('Taxonomy Term'),
+    'feature_source' => TRUE,
     'default_hook' => 'uuid_features_default_terms',
     'default_file' => FEATURES_DEFAULTS_INCLUDED,
     'file' => drupal_get_path('module', 'uuid_features') . '/includes/uuid_term.features.inc',

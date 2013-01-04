@@ -3,6 +3,7 @@ description = Provides features integration for content (nodes, taxonomy, etc) b
 core = 7.x
 dependencies[] = features
 dependencies[] = uuid
+dependencies[] = entity
 package = Features
 
 files[] = uuid_features.install
@@ -11,16 +12,15 @@ files[] = includes/uuid_features.drush.inc
 files[] = includes/uuid_file.features.inc
 files[] = includes/uuid_node.features.inc
 files[] = includes/uuid_term.features.inc
-files[] = includes/uuid_vocabulary.features.inc
 files[] = modules/content.inc
 files[] = modules/filefield.inc
 files[] = modules/nodereference.inc
 files[] = modules/taxonomy.inc
 files[] = modules/userreference.inc
 
-; Information added by drupal.org packaging script on 2011-12-14
-version = "7.x-1.x-dev"
+; Information added by drupal.org packaging script on 2012-07-13
+version = "7.x-1.0-alpha1+3-dev"
 core = "7.x"
 project = "uuid_features"
-datestamp = "1323824218"
+datestamp = "1342141490"
 

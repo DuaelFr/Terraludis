@@ -90,6 +90,7 @@ function uuid_node_features_export_render($module, $data) {
     unset($export->vid);
     unset($export->revision_timestamp);
     unset($export->changed);
+    unset($export->last_comment_timestamp);
 
     // The hook_alter signature is:
     // hook_uuid_node_features_export_render_alter(&$export, $node, $module);
@@ -129,8 +130,8 @@ function uuid_node_features_rebuild($module) {
 
       // Find the matching UUID, with a fresh cache.
       $nids = entity_get_id_by_uuid('node', array($node->uuid));
-      $nid = array_key_exists($node->uuid, $nids) ? $nids[$node->uuid] : FALSE;
-      if(!empty($nid)) {
+      if (isset($nids[$node->uuid])) {
+          $nid = $nids[$node->uuid];
           $existing = node_load($nid, NULL, TRUE);
           if (!empty($existing)) {
             $node->nid = $existing->nid;
