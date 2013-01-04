@@ -118,7 +118,9 @@ function _tl_hacks_get_default_icon_uri() {
   if (empty($uri)) {
     $field = field_info_field('field_icon');
     $file = file_load($field['settings']['default_image']);
-    $uri = $file->uri;    
+    if ($file) {
+      $uri = $file->uri;    
+    }
   }
   return $uri;
 }
