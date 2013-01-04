@@ -250,8 +250,8 @@ function nice_menus_block_view($delta) {
     }
     // If we're building the navigation block
     // use the same block title logic as menu module.
+    global $user;
     if ($output['subject'] == t('navigation') && $user->uid) {
-      global $user;
       $subject = $user->name;
     }
     else {
@@ -284,9 +284,6 @@ function nice_menus_theme() {
     ),
     'nice_menus_secondary_menu' => array(
       'variables' => array('direction' => 'down', 'depth' => -1),
-    ),
-    'nice_menus_menu_item_link' => array(
-      'variables' => array('element' => array()),
     ),
   );
 }
@@ -441,30 +438,33 @@ function theme_nice_menus_build($variables) {
       // If it has children build a nice little tree under it.
       if ((!empty($menu_item['link']['has_children'])) && (!empty($menu_item['below'])) && $depth != 0) {
         // Keep passing children into the function 'til we get them all.
-        $children = theme('nice_menus_build', array('menu' => $menu_item['below'], 'depth' => $depth, 'trail' => $trail));
+        if ($menu_item['link']['depth'] <= $depth || $depth == -1) {
+          $children = array(
+            '#theme' => 'nice_menus_build',
+            '#prefix' => '<ul>',
+            '#suffix' => '</ul>',
+            '#menu' => $menu_item['below'],
+            '#depth' => $depth,
+            '#trail' => $trail,
+          );
+        }
+        else {
+          $children = '';
+        }
         // Set the class to parent only of children are displayed.
         $parent_class = ($children && ($menu_item['link']['depth'] <= $depth || $depth == -1)) ? 'menuparent ' : '';
-         
          $element = array(
-          '#below' => '',
+          '#below' => $children,
           '#title' => $menu_item['link']['link_title'],
           '#href' =>  $menu_item['link']['href'],
           '#localized_options' => $menu_item['link']['localized_options'],
-          '#attributes' => array(),
+          '#attributes' => array(
+            'class' => array('menu-' . $mlid, $parent_class, $class, $first_class, $oddeven_class, $last_class),
+          ),
         );
         $variables['element'] = $element;
+        $output .= theme('menu_link', $variables);
         
-        $output .= '<li class="menu-' . $mlid . ' ' . $parent_class . $class . $first_class . $oddeven_class . $last_class . '">'. theme('nice_menus_menu_item_link', $variables);
-        // Check our depth parameters.
-        if ($menu_item['link']['depth'] <= $depth || $depth == -1) {
-          // Build the child UL only if children are displayed for the user.
-          if ($children) {
-            $output .= '<ul>';
-            $output .= $children;
-            $output .= "</ul>\n";
-          }
-        }
-        $output .= "</li>\n";
       }
       else {
      
@@ -473,10 +473,12 @@ function theme_nice_menus_build($variables) {
           '#title' => $menu_item['link']['link_title'],
           '#href' =>  $menu_item['link']['href'],
           '#localized_options' => $menu_item['link']['localized_options'],
-          '#attributes' => array(),
+          '#attributes' => array(
+            'class' => array('menu-' . $mlid, $class, $first_class, $oddeven_class, $last_class),
+          ),
         );
         $variables['element'] = $element;
-        $output .= '<li class="menu-' . $mlid . ' ' . $class . $first_class . $oddeven_class . $last_class . '">' . theme('nice_menus_menu_item_link', $variables) . "</li>\n";
+        $output .= theme('menu_link', $variables);
       }
     }
   }
@@ -565,16 +567,4 @@ function theme_nice_menus_secondary_menu($variables) {
   $menu_name = variable_get('menu_secondary_links_source', 'user-menu');
   $output = theme('nice_menus', array('id' => 0, 'menu_name' => $menu_name, 'mlid' => 0, 'direction' => $direction, 'depth' => $depth));
   return $output['content'];
-}
-
-/**
- * Generate the HTML output for a single menu link.
- *
- * Function is a backport of Drupal 6
- */
-function theme_nice_menus_menu_item_link($variables) {
-  if (empty($variables['element']['#localized_options'])) {
-    $variables['element']['#localized_options'] = array();
-  }
-  return l($variables['element']['#title'], $variables['element']['#href'], $variables['element']['#localized_options']);
 }
