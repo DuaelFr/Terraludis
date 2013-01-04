@@ -72,7 +72,13 @@ function context_theme_registry_alter(&$theme_registry) {
   if ($position !== FALSE) {
     unset($theme_registry['page']['preprocess functions'][$position]);
   }
-  $position = array_search('template_preprocess_page', $theme_registry['page']['preprocess functions']);
+  // Prevent conflict with i18n_menu.
+  if (module_exists('i18n_menu')) {
+    $position = array_search('i18n_menu_preprocess_page', $theme_registry['page']['preprocess functions']);
+  }
+  else {
+    $position = array_search('template_preprocess_page', $theme_registry['page']['preprocess functions']);
+  }
   $position = $position ? $position + 1 : 2;
   array_splice($theme_registry['page']['preprocess functions'], $position, 0, 'context_preprocess_page');
 }
@@ -121,14 +127,24 @@ function context_node_view($node, $view_mode) {
  * Implementation of hook_form_alter().
  */
 function context_form_alter(&$form, $form_state, $form_id) {
-  // Prevent this from firing on admin pages... damn form driven apis...
-  if (!empty($form['#node_edit_form']) && arg(0) != 'admin') {
-    context_node_condition($form['#node'], 'form');
-  }
   // If the form is an admin for, flag it so that we can force a rebuild if needed.
   if (path_is_admin($_GET['q'])) {
     $form['#submit'][] = 'context_admin_form_submit';
   }
+  // Trigger the condition in an after_build function to avoid being skipped
+  // when there are validation errors.
+  $form['#after_build'][] = 'context_form_alter_node_after_build';
+}
+
+/**
+ * Form #after_build callback for context_form_alter().
+ */
+function context_form_alter_node_after_build($form, &$form_state) {
+  // Prevent this from firing on admin pages... damn form driven apis...
+  if (!empty($form['#node_edit_form']) && arg(0) != 'admin') {
+    context_node_condition($form['#node'], 'form');
+  }
+  return $form;
 }
 
 /**
@@ -184,7 +200,7 @@ function context_form_user_profile_form_alter(&$form, $form_state) {
 /**
  * Implementation of hook_form_alter() for user_register_form.
  */
-function context_form_user_register_form(&$form, $form_state) {
+function context_form_user_register_form_alter(&$form, $form_state) {
   if ($plugin = context_get_plugin('condition', 'user_page')) {
     $plugin->execute($form['#user'], 'register');
   }
