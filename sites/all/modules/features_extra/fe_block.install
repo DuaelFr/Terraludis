@@ -1,7 +1,11 @@
 <?php
+/**
+ * @file
+ * Install, uninstall and schema functions for the Features Extra Block module.
+ */
 
 /**
- * Implementation of hook_schema().
+ * Implements hook_schema().
  */
 function fe_block_schema() {
   $schema['fe_block_boxes'] = array(

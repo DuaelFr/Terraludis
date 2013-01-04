@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Implementation of hook_features_api().
+ * Implements hook_features_api().
  */
 function fe_nodequeue_features_api() {
   return array(
@@ -15,12 +15,12 @@ function fe_nodequeue_features_api() {
 }
 
 /**
- * Implementation of hook_features_export_options().
+ * Implements hook_features_export_options().
  */
 function fe_nodequeue_features_export_options() {
   $options = array();
-  $table   = 'nodequeue_queue'; 
-  
+  $table   = 'nodequeue_queue';
+
   $query = "SELECT * FROM {{$table}}";
   $fields = db_query($query);
   while ($obj = $fields->fetchObject()) {
@@ -31,7 +31,7 @@ function fe_nodequeue_features_export_options() {
 }
 
 /**
- * Implementation of hook_features_export().
+ * Implements hook_features_export().
  */
 function fe_nodequeue_features_export($data, &$export, $module_name = '') {
   $pipe = array();
@@ -52,7 +52,7 @@ function fe_nodequeue_features_export($data, &$export, $module_name = '') {
 }
 
 /**
- * Implementation of hook_features_export_render().
+ * Implements hook_features_export_render().
  */
 function fe_nodequeue_features_export_render($module_name = '', $data) {
   $code = array();
@@ -60,9 +60,12 @@ function fe_nodequeue_features_export_render($module_name = '', $data) {
   $code[] = '';
 
   foreach ($data as $name) {
-    if ($nodequeue = nodequeue_load_queue_by_name($name)) {
-      // sort roles and types arrays into ascending order so that we can 
-      // check for overridden db data without being affected by the 
+    // Clone the nodequeue object so that our changes aren't statically
+    // cached.
+    $nodequeue_static = nodequeue_load_queue_by_name($name);
+    if (!empty($nodequeue_static) && $nodequeue = clone $nodequeue_static) {
+      // sort roles and types arrays into ascending order so that we can
+      // check for overridden db data without being affected by the
       // order in which this array gets stored/loaded.
       if (!empty($nodequeue->roles)) {
         sort($nodequeue->roles);
@@ -70,6 +73,11 @@ function fe_nodequeue_features_export_render($module_name = '', $data) {
       if (!empty($nodequeue->types)) {
         sort($nodequeue->types);
       }
+
+      // Remove variables which are specific to the current site and should not
+      // be exported.
+      unset($nodequeue->qid);
+      unset($nodequeue->subqueues);
 
       $nodequeue_export = features_var_export($nodequeue, '  ');
 
@@ -87,23 +95,23 @@ function fe_nodequeue_features_export_render($module_name = '', $data) {
 
 
 /**
- * Implementation of hook_features_revert().
+ * Implements hook_features_revert().
  */
 function fe_nodequeue_features_revert($module) {
   $defaults = features_get_default('fe_nodequeue', $module);
-  
+
   // Revert.
   foreach ($defaults as $object) {
     if (empty($object['name'])) {
       continue;
     }
-    
-    if (!($nodequeue_queue = nodequeue_load_queue_by_name($object['name']))) {
-      unset($object['qid']);
-      $result = _fe_nodequeue_save_queue((array) $object);
-    } else {
-      $result = _fe_nodequeue_save_queue((array) $object);
+
+    if ($nodequeue_queue = nodequeue_load_queue_by_name($object['name'])) {
+      // Update existing nodequeue in the situation that a nodequeue with the
+      // same name already exists.
+      $object['qid'] = $nodequeue_queue->qid;
     }
+    $result = _fe_nodequeue_save_queue((array) $object);
   }
 
   return TRUE;

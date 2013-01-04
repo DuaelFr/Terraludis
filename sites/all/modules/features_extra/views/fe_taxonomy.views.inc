@@ -6,7 +6,7 @@
  */
 
 /**
- * Implementation of hook_views_data()
+ * Implements hook_views_data().
  */
 function fe_taxonomy_views_data() {
   // Table
