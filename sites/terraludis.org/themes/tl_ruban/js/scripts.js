@@ -1,4 +1,6 @@
-/*
+/**
+ * Corrige le bug des champs préremplis sous chrome (instable) 
+ *
 (function($) {
 $(window).load(function(){
   $('input:-webkit-autofill').each(function(){
@@ -9,7 +11,7 @@ $(window).load(function(){
   });
 });
 })(jQuery);
-*/
+// Do not delete this line */
 
 /**
  * Cache les checkbox des listes de choix d'univers
@@ -40,3 +42,4 @@ $(window).load(function(){
   });
 });
 })(jQuery);
+//Do not delete this line */
