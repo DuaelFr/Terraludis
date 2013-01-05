@@ -10,7 +10,7 @@
 function tl_context_global_context_default_contexts() {
   $export = array();
 
-  $context = new stdClass;
+  $context = new stdClass();
   $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
   $context->api_version = 3;
   $context->name = 'front';
@@ -26,17 +26,17 @@ function tl_context_global_context_default_contexts() {
   $context->reactions = array(
     'block' => array(
       'blocks' => array(
+        'views-evenements-block_2' => array(
+          'module' => 'views',
+          'delta' => 'evenements-block_2',
+          'region' => 'content',
+          'weight' => '-9',
+        ),
         'views-actualites-block' => array(
           'module' => 'views',
           'delta' => 'actualites-block',
           'region' => 'content',
-          'weight' => '-10',
-        ),
-        'views-evenements-block_1' => array(
-          'module' => 'views',
-          'delta' => 'evenements-block_1',
-          'region' => 'content',
-          'weight' => '-10',
+          'weight' => '-8',
         ),
       ),
     ),
@@ -49,7 +49,7 @@ function tl_context_global_context_default_contexts() {
   t('Page d\'accueil');
   $export['front'] = $context;
 
-  $context = new stdClass;
+  $context = new stdClass();
   $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
   $context->api_version = 3;
   $context->name = 'global';
@@ -124,7 +124,7 @@ function tl_context_global_context_default_contexts() {
   t('Contextes globaux');
   $export['global'] = $context;
 
-  $context = new stdClass;
+  $context = new stdClass();
   $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
   $context->api_version = 3;
   $context->name = 'no-front';

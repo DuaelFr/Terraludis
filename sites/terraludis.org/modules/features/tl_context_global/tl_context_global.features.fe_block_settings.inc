@@ -10,87 +10,107 @@
 function tl_context_global_default_fe_block_settings() {
   $export = array();
 
-  // tl_ruban
-  $theme = array();
+  $export['version'] = '2.0';
 
-  $theme['menu-menu-menu-footer'] = array(
-    'module' => 'menu',
+  $export['menu-menu-menu-footer'] = array(
+    'cache' => -1,
+    'custom' => '0',
     'delta' => 'menu-menu-footer',
-    'theme' => 'tl_ruban',
-    'status' => 0,
-    'weight' => '0',
-    'region' => '',
-    'custom' => '0',
-    'visibility' => '0',
+    'module' => 'menu',
+    'node_types' => array(),
     'pages' => '',
+    'roles' => array(),
+    'themes' => array(
+      'tl_ruban' => array(
+        'region' => '',
+        'status' => 0,
+        'theme' => 'tl_ruban',
+        'weight' => '0',
+      ),
+    ),
     'title' => '<none>',
-    'cache' => -1,
+    'visibility' => '0',
   );
 
-  $theme['nice_menus-1'] = array(
-    'module' => 'nice_menus',
+  $export['nice_menus-1'] = array(
+    'cache' => -1,
+    'custom' => '0',
     'delta' => '1',
-    'theme' => 'tl_ruban',
-    'status' => 0,
-    'weight' => '0',
-    'region' => '',
-    'custom' => '0',
-    'visibility' => '0',
+    'module' => 'nice_menus',
+    'node_types' => array(),
     'pages' => '',
+    'roles' => array(),
+    'themes' => array(
+      'tl_ruban' => array(
+        'region' => '',
+        'status' => 0,
+        'theme' => 'tl_ruban',
+        'weight' => '0',
+      ),
+    ),
     'title' => '<none>',
-    'cache' => -1,
+    'visibility' => '0',
   );
 
-  $theme['shoutbox-shoutbox'] = array(
-    'module' => 'shoutbox',
-    'delta' => 'shoutbox',
-    'theme' => 'tl_ruban',
-    'status' => 0,
-    'weight' => '4',
-    'region' => '',
-    'custom' => '0',
-    'visibility' => '0',
-    'pages' => '',
-    'title' => 'Chat-box',
+  $export['shoutbox-shoutbox'] = array(
     'cache' => '1',
+    'custom' => '0',
+    'delta' => 'shoutbox',
+    'module' => 'shoutbox',
+    'node_types' => array(),
+    'pages' => '',
+    'roles' => array(),
+    'themes' => array(
+      'tl_ruban' => array(
+        'region' => '',
+        'status' => 0,
+        'theme' => 'tl_ruban',
+        'weight' => '4',
+      ),
+    ),
+    'title' => 'Chat-box',
+    'visibility' => '0',
   );
 
-  $theme['user-online'] = array(
-    'module' => 'user',
+  $export['user-online'] = array(
+    'cache' => -1,
+    'custom' => '0',
     'delta' => 'online',
-    'theme' => 'tl_ruban',
-    'status' => 0,
-    'weight' => '8',
-    'region' => '',
-    'custom' => '0',
-    'visibility' => '0',
+    'module' => 'user',
+    'node_types' => array(),
     'pages' => '',
+    'roles' => array(),
+    'themes' => array(
+      'tl_ruban' => array(
+        'region' => '',
+        'status' => 0,
+        'theme' => 'tl_ruban',
+        'weight' => '8',
+      ),
+    ),
     'title' => 'Qui est connecté ?',
-    'cache' => -1,
-  );
-
-  $theme['views-groupes-block_universe'] = array(
-    'module' => 'views',
-    'delta' => 'groupes-block_universe',
-    'theme' => 'tl_ruban',
-    'status' => 0,
-    'weight' => '10',
-    'region' => '',
-    'custom' => '0',
     'visibility' => '0',
-    'pages' => '',
-    'title' => '',
-    'cache' => -1,
   );
 
-  $export['tl_ruban'] = $theme;
+  $export['views-groupes-block_universe'] = array(
+    'cache' => -1,
+    'custom' => '0',
+    'delta' => 'groupes-block_universe',
+    'module' => 'views',
+    'node_types' => array(),
+    'pages' => '',
+    'roles' => array(),
+    'themes' => array(
+      'tl_ruban' => array(
+        'region' => '',
+        'status' => 0,
+        'theme' => 'tl_ruban',
+        'weight' => '10',
+      ),
+    ),
+    'title' => '',
+    'visibility' => '0',
+  );
 
-  $theme_default = variable_get('theme_default', 'garland');
-  $themes = list_themes();
-  foreach ($export as $theme_key => $settings) {
-    if ($theme_key != $theme_default && empty($themes[$theme_key]->status)) {
-      unset($export[$theme_key]);
-    }
-  }
   return $export;
 }
