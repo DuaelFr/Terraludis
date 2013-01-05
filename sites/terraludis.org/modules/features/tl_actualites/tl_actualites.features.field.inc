@@ -10,7 +10,7 @@
 function tl_actualites_field_default_fields() {
   $fields = array();
 
-  // Exported field: 'field_collection_item-field_news_links-field_link_link'
+  // Exported field: 'field_collection_item-field_news_links-field_link_link'.
   $fields['field_collection_item-field_news_links-field_link_link'] = array(
     'field_config' => array(
       'active' => '1',
@@ -20,6 +20,7 @@ function tl_actualites_field_default_fields() {
       'field_name' => 'field_link_link',
       'foreign keys' => array(),
       'indexes' => array(),
+      'locked' => '0',
       'module' => 'link',
       'settings' => array(
         'attributes' => array(
@@ -86,7 +87,7 @@ function tl_actualites_field_default_fields() {
     ),
   );
 
-  // Exported field: 'field_collection_item-field_news_links-field_link_type'
+  // Exported field: 'field_collection_item-field_news_links-field_link_type'.
   $fields['field_collection_item-field_news_links-field_link_type'] = array(
     'field_config' => array(
       'active' => '1',
@@ -100,6 +101,7 @@ function tl_actualites_field_default_fields() {
           0 => 'value',
         ),
       ),
+      'locked' => '0',
       'module' => 'list',
       'settings' => array(
         'allowed_values' => array(
@@ -146,7 +148,7 @@ function tl_actualites_field_default_fields() {
     ),
   );
 
-  // Exported field: 'node-actualite-body'
+  // Exported field: 'node-actualite-body'.
   $fields['node-actualite-body'] = array(
     'field_config' => array(
       'active' => '1',
@@ -169,6 +171,7 @@ function tl_actualites_field_default_fields() {
           0 => 'format',
         ),
       ),
+      'locked' => '0',
       'module' => 'text',
       'settings' => array(),
       'translatable' => '0',
@@ -218,7 +221,7 @@ function tl_actualites_field_default_fields() {
     ),
   );
 
-  // Exported field: 'node-actualite-field_news_links'
+  // Exported field: 'node-actualite-field_news_links'.
   $fields['node-actualite-field_news_links'] = array(
     'field_config' => array(
       'active' => '1',
@@ -228,8 +231,10 @@ function tl_actualites_field_default_fields() {
       'field_name' => 'field_news_links',
       'foreign keys' => array(),
       'indexes' => array(),
+      'locked' => '0',
       'module' => 'field_collection',
       'settings' => array(
+        'hide_blank_items' => TRUE,
         'path' => '',
       ),
       'translatable' => '0',
@@ -278,7 +283,7 @@ function tl_actualites_field_default_fields() {
     ),
   );
 
-  // Exported field: 'node-actualite-field_news_type'
+  // Exported field: 'node-actualite-field_news_type'.
   $fields['node-actualite-field_news_type'] = array(
     'field_config' => array(
       'active' => '1',
@@ -292,6 +297,7 @@ function tl_actualites_field_default_fields() {
           0 => 'value',
         ),
       ),
+      'locked' => '0',
       'module' => 'list',
       'settings' => array(
         'allowed_values' => array(
@@ -340,7 +346,7 @@ function tl_actualites_field_default_fields() {
     ),
   );
 
-  // Exported field: 'node-actualite-field_tags'
+  // Exported field: 'node-actualite-field_tags'.
   $fields['node-actualite-field_tags'] = array(
     'field_config' => array(
       'active' => '1',
@@ -361,6 +367,7 @@ function tl_actualites_field_default_fields() {
           0 => 'tid',
         ),
       ),
+      'locked' => '0',
       'module' => 'taxonomy',
       'settings' => array(
         'allowed_values' => array(
@@ -413,7 +420,7 @@ function tl_actualites_field_default_fields() {
     ),
   );
 
-  // Exported field: 'node-actualite-group_audience'
+  // Exported field: 'node-actualite-group_audience'.
   $fields['node-actualite-group_audience'] = array(
     'field_config' => array(
       'active' => '1',
@@ -434,6 +441,7 @@ function tl_actualites_field_default_fields() {
           0 => 'gid',
         ),
       ),
+      'locked' => '0',
       'module' => 'og',
       'no_ui' => TRUE,
       'settings' => array(),
