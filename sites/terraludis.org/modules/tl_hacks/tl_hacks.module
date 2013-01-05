@@ -55,6 +55,10 @@ function tl_hacks_field_formatter_info() {
       'label' => t('Universes icons'),
       'field types' => array('group'),
     ),
+    'tl_hacks_list_translitered' => array(
+      'label' => t('Translitered'),
+      'field types' => array('text', 'text_long', 'text_with_summary', 'list_text'),
+    ),
   );
 }
 
@@ -64,48 +68,60 @@ function tl_hacks_field_formatter_info() {
 function tl_hacks_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = array();
 
-  if ($field['field_name'] == OG_AUDIENCE_FIELD && !empty($items[0])) {
-    foreach ($items as $delta => $item) {
-      if ($group = og_get_group('group', $item['gid'])) {
-        if ($group->access()) {
-          $label = og_label($group->gid);
-          $entity = entity_load($group->entity_type, array($group->etid));
-          $entity = current($entity);
-          
-          $flang = field_language('node', $entity, 'field_group_type');
-          if ($entity->field_group_type[$flang][0]['value'] != 'univers') continue;
-          
-          // Get the entity type of the group entity.
-          $uri = entity_uri($group->entity_type, $entity);
-          $flang = field_language('node', $entity, 'field_icon');
-          $imageData = array(
-            'style_name' => 'universe_icon',
-            'path' => !empty($entity->field_icon) ? $entity->field_icon[$flang][0]['filename'] : _tl_hacks_get_default_icon_uri(),
-            'alt' => check_plain($entity->title),
-            'title' => check_plain($entity->title),
-          );
-          $element[$delta] = array(
-            '#type' => 'link',
-            '#title' => theme('image_style', $imageData),
-            '#href' => $uri['path'],
-            '#options' => array('html' => TRUE,),
-          );
-        }
-        else {
-          // No need to show private groups several times, so remember if it was
-          // already added.
-          $added = &drupal_static(__FUNCTION__, FALSE);
-
-          if (!$added) {
-            $added = TRUE;
-            $element[$delta] = array(
-              '#markup' => '- ' . t('Private group') . ' -',
-            );
+  switch ($display['type']) {
+    case 'tl_hacks_list_icons':
+      if ($field['field_name'] == OG_AUDIENCE_FIELD && !empty($items[0])) {
+        foreach ($items as $delta => $item) {
+          if ($group = og_get_group('group', $item['gid'])) {
+            if ($group->access()) {
+              $label = og_label($group->gid);
+              $entity = entity_load($group->entity_type, array($group->etid));
+              $entity = current($entity);
+              
+              $flang = field_language('node', $entity, 'field_group_type');
+              if ($entity->field_group_type[$flang][0]['value'] != 'univers') continue;
+              
+              // Get the entity type of the group entity.
+              $uri = entity_uri($group->entity_type, $entity);
+              $flang = field_language('node', $entity, 'field_icon');
+              $imageData = array(
+                'style_name' => 'universe_icon',
+                'path' => !empty($entity->field_icon) ? $entity->field_icon[$flang][0]['filename'] : _tl_hacks_get_default_icon_uri(),
+                'alt' => check_plain($entity->title),
+                'title' => check_plain($entity->title),
+              );
+              $element[$delta] = array(
+                '#type' => 'link',
+                '#title' => theme('image_style', $imageData),
+                '#href' => $uri['path'],
+                '#options' => array('html' => TRUE,),
+              );
+            }
+            else {
+              // No need to show private groups several times, so remember if it was
+              // already added.
+              $added = &drupal_static(__FUNCTION__, FALSE);
+    
+              if (!$added) {
+                $added = TRUE;
+                $element[$delta] = array(
+                  '#markup' => '- ' . t('Private group') . ' -',
+                );
+              }
+            }
           }
         }
       }
-    }
+      break;
+    case 'tl_hacks_list_translitered':
+      foreach ($items as $delta => $item) {
+        $output = check_plain($item['value']);
+        $output = transliteration_clean_filename($output);
+        $element[$delta] = array('#markup' => $output);
+      }
+      break;
   }
+
 
   return $element;
 }
