@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function tl_config_base_install() {
+  variable_set('date_format_date_court', 'd/m/Y');
+  variable_set('date_format_date_medium', 'D d/m/Y');
+  variable_set('date_format_date_long', 'l j F Y');
+}
+
+/**
+ * Execute install function.
+ */
+function tl_config_base_update_7000() {
+  tl_config_base_install();
+}
