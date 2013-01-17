@@ -377,12 +377,15 @@ function tl_actualites_field_default_fields() {
       'display' => array(
         'default' => array(
           'label' => 'hidden',
-          'module' => 'image',
+          'module' => 'colorbox',
           'settings' => array(
-            'image_link' => '',
-            'image_style' => 'news_large',
+            'colorbox_caption' => 'auto',
+            'colorbox_gallery' => 'post',
+            'colorbox_gallery_custom' => '',
+            'colorbox_image_style' => '',
+            'colorbox_node_style' => 'news_large',
           ),
-          'type' => 'image',
+          'type' => 'colorbox',
           'weight' => '13',
         ),
         'teaser' => array(
