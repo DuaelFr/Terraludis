@@ -47,11 +47,11 @@ function tl_actualites_field_default_fields() {
       'description' => '',
       'display' => array(
         'default' => array(
-          'label' => 'above',
+          'label' => 'hidden',
           'module' => 'link',
           'settings' => array(),
           'type' => 'link_default',
-          'weight' => 1,
+          'weight' => '0',
         ),
       ),
       'entity_type' => 'field_collection_item',
@@ -125,10 +125,9 @@ function tl_actualites_field_default_fields() {
       'display' => array(
         'default' => array(
           'label' => 'above',
-          'module' => 'list',
           'settings' => array(),
-          'type' => 'list_default',
-          'weight' => 0,
+          'type' => 'hidden',
+          'weight' => '1',
         ),
       ),
       'entity_type' => 'field_collection_item',
@@ -188,7 +187,7 @@ function tl_actualites_field_default_fields() {
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => 1,
+          'weight' => '14',
         ),
         'teaser' => array(
           'label' => 'hidden',
@@ -216,7 +215,7 @@ function tl_actualites_field_default_fields() {
           'summary_rows' => 5,
         ),
         'type' => 'text_textarea_with_summary',
-        'weight' => '2',
+        'weight' => '3',
       ),
     ),
   );
@@ -247,17 +246,13 @@ function tl_actualites_field_default_fields() {
       'description' => '',
       'display' => array(
         'default' => array(
-          'label' => 'above',
+          'label' => 'inline',
           'module' => 'field_collection',
           'settings' => array(
-            'add' => 'Ajouter',
-            'delete' => 'Supprimer',
-            'description' => TRUE,
-            'edit' => 'Modifier',
             'view_mode' => 'full',
           ),
-          'type' => 'field_collection_view',
-          'weight' => 3,
+          'type' => 'field_collection_fields',
+          'weight' => '15',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -278,7 +273,7 @@ function tl_actualites_field_default_fields() {
         'module' => 'field_collection',
         'settings' => array(),
         'type' => 'field_collection_embed',
-        'weight' => '3',
+        'weight' => '4',
       ),
     ),
   );
@@ -317,10 +312,9 @@ function tl_actualites_field_default_fields() {
       'display' => array(
         'default' => array(
           'label' => 'above',
-          'module' => 'list',
           'settings' => array(),
-          'type' => 'list_default',
-          'weight' => 2,
+          'type' => 'hidden',
+          'weight' => '7',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -342,6 +336,86 @@ function tl_actualites_field_default_fields() {
         'settings' => array(),
         'type' => 'options_select',
         'weight' => '1',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-actualite-field_picture'.
+  $fields['node-actualite-field_picture'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_picture',
+      'foreign keys' => array(
+        'fid' => array(
+          'columns' => array(
+            'fid' => 'fid',
+          ),
+          'table' => 'file_managed',
+        ),
+      ),
+      'indexes' => array(
+        'fid' => array(
+          0 => 'fid',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'image',
+      'settings' => array(
+        'default_image' => 0,
+        'uri_scheme' => 'public',
+      ),
+      'translatable' => '0',
+      'type' => 'image',
+    ),
+    'field_instance' => array(
+      'bundle' => 'actualite',
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'module' => 'image',
+          'settings' => array(
+            'image_link' => '',
+            'image_style' => 'news_large',
+          ),
+          'type' => 'image',
+          'weight' => '13',
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_picture',
+      'label' => 'Vignette',
+      'required' => 0,
+      'settings' => array(
+        'alt_field' => 1,
+        'default_image' => 0,
+        'file_directory' => 'news',
+        'file_extensions' => 'png gif jpg jpeg',
+        'max_filesize' => '',
+        'max_resolution' => '',
+        'min_resolution' => '',
+        'title_field' => 1,
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'image',
+        'settings' => array(
+          'preview_image_style' => 'thumbnail',
+          'progress_indicator' => 'throbber',
+        ),
+        'type' => 'image_image',
+        'weight' => '2',
       ),
     ),
   );
@@ -388,10 +462,9 @@ function tl_actualites_field_default_fields() {
       'display' => array(
         'default' => array(
           'label' => 'above',
-          'module' => 'taxonomy',
           'settings' => array(),
-          'type' => 'taxonomy_term_reference_link',
-          'weight' => 4,
+          'type' => 'hidden',
+          'weight' => '8',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -415,7 +488,7 @@ function tl_actualites_field_default_fields() {
           'size' => 60,
         ),
         'type' => 'taxonomy_autocomplete',
-        'weight' => '4',
+        'weight' => '5',
       ),
     ),
   );
@@ -456,11 +529,11 @@ function tl_actualites_field_default_fields() {
       'description' => '',
       'display' => array(
         'default' => array(
-          'label' => 'above',
-          'module' => 'og',
+          'label' => 'hidden',
+          'module' => 'tl_hacks',
           'settings' => array(),
-          'type' => 'og_list_default',
-          'weight' => 0,
+          'type' => 'tl_hacks_list_icons',
+          'weight' => '3',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -494,7 +567,7 @@ function tl_actualites_field_default_fields() {
           'opt_group' => 'auto',
         ),
         'type' => 'og_checkboxes_audience_widget',
-        'weight' => '5',
+        'weight' => '6',
       ),
       'widget_type' => 'group_audience',
     ),
@@ -509,6 +582,7 @@ function tl_actualites_field_default_fields() {
   t('Type d\'Actualité');
   t('Type de lien');
   t('URL');
+  t('Vignette');
 
   return $fields;
 }

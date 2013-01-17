@@ -74,6 +74,7 @@ function tl_actualites_views_default_views() {
   $handler->display->display_options['fields']['group_audience']['table'] = 'field_data_group_audience';
   $handler->display->display_options['fields']['group_audience']['field'] = 'group_audience';
   $handler->display->display_options['fields']['group_audience']['label'] = '';
+  $handler->display->display_options['fields']['group_audience']['exclude'] = TRUE;
   $handler->display->display_options['fields']['group_audience']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['group_audience']['click_sort_column'] = 'gid';
   $handler->display->display_options['fields']['group_audience']['type'] = 'tl_hacks_list_icons';
@@ -84,6 +85,7 @@ function tl_actualites_views_default_views() {
   $handler->display->display_options['fields']['title']['table'] = 'node';
   $handler->display->display_options['fields']['title']['field'] = 'title';
   $handler->display->display_options['fields']['title']['label'] = '';
+  $handler->display->display_options['fields']['title']['exclude'] = TRUE;
   $handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
   $handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
   $handler->display->display_options['fields']['title']['element_type'] = 'h2';
@@ -93,6 +95,7 @@ function tl_actualites_views_default_views() {
   $handler->display->display_options['fields']['comment_count']['table'] = 'node_comment_statistics';
   $handler->display->display_options['fields']['comment_count']['field'] = 'comment_count';
   $handler->display->display_options['fields']['comment_count']['label'] = '';
+  $handler->display->display_options['fields']['comment_count']['exclude'] = TRUE;
   $handler->display->display_options['fields']['comment_count']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['comment_count']['hide_alter_empty'] = FALSE;
   $handler->display->display_options['fields']['comment_count']['separator'] = '';
@@ -104,6 +107,7 @@ function tl_actualites_views_default_views() {
   $handler->display->display_options['fields']['changed']['table'] = 'node';
   $handler->display->display_options['fields']['changed']['field'] = 'changed';
   $handler->display->display_options['fields']['changed']['label'] = '- ';
+  $handler->display->display_options['fields']['changed']['exclude'] = TRUE;
   $handler->display->display_options['fields']['changed']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['changed']['date_format'] = 'custom';
   $handler->display->display_options['fields']['changed']['custom_date_format'] = 'd/m/Y';
@@ -113,8 +117,22 @@ function tl_actualites_views_default_views() {
   $handler->display->display_options['fields']['name']['field'] = 'name';
   $handler->display->display_options['fields']['name']['relationship'] = 'uid';
   $handler->display->display_options['fields']['name']['label'] = 'par ';
+  $handler->display->display_options['fields']['name']['exclude'] = TRUE;
   $handler->display->display_options['fields']['name']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['name']['link_to_user'] = FALSE;
+  /* Champ: DIV Title */
+  $handler->display->display_options['fields']['nothing']['id'] = 'nothing';
+  $handler->display->display_options['fields']['nothing']['table'] = 'views';
+  $handler->display->display_options['fields']['nothing']['field'] = 'nothing';
+  $handler->display->display_options['fields']['nothing']['ui_name'] = 'DIV Title';
+  $handler->display->display_options['fields']['nothing']['label'] = '';
+  $handler->display->display_options['fields']['nothing']['alter']['text'] = '<div class="news-title">
+  <div class="univers">[group_audience]</div>
+  <h2>[title]</h2>
+  <div class="comment-count">[comment_count]</div>
+  <div class="metadata">- [changed] par [name]</div>
+</div>';
+  $handler->display->display_options['fields']['nothing']['element_label_colon'] = FALSE;
   /* Champ: Contenu : Description */
   $handler->display->display_options['fields']['body']['id'] = 'body';
   $handler->display->display_options['fields']['body']['table'] = 'field_data_body';
@@ -125,6 +143,29 @@ function tl_actualites_views_default_views() {
   $handler->display->display_options['fields']['body']['settings'] = array(
     'trim_length' => '600',
   );
+  /* Champ: Contenu : Vignette */
+  $handler->display->display_options['fields']['field_picture']['id'] = 'field_picture';
+  $handler->display->display_options['fields']['field_picture']['table'] = 'field_data_field_picture';
+  $handler->display->display_options['fields']['field_picture']['field'] = 'field_picture';
+  $handler->display->display_options['fields']['field_picture']['label'] = '';
+  $handler->display->display_options['fields']['field_picture']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_picture']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['field_picture']['click_sort_column'] = 'fid';
+  $handler->display->display_options['fields']['field_picture']['settings'] = array(
+    'image_style' => 'news_list',
+    'image_link' => 'content',
+  );
+  /* Champ: DIV Content */
+  $handler->display->display_options['fields']['nothing_1']['id'] = 'nothing_1';
+  $handler->display->display_options['fields']['nothing_1']['table'] = 'views';
+  $handler->display->display_options['fields']['nothing_1']['field'] = 'nothing';
+  $handler->display->display_options['fields']['nothing_1']['ui_name'] = 'DIV Content';
+  $handler->display->display_options['fields']['nothing_1']['label'] = '';
+  $handler->display->display_options['fields']['nothing_1']['alter']['text'] = '<div class="news-content">
+  <div class="picture">[field_picture]</div>
+  <div class="teaser">[body]</div>
+</div>';
+  $handler->display->display_options['fields']['nothing_1']['element_label_colon'] = FALSE;
   /* Critère de tri: Contenu : Épinglé (en haut des listes) */
   $handler->display->display_options['sorts']['sticky']['id'] = 'sticky';
   $handler->display->display_options['sorts']['sticky']['table'] = 'node';
@@ -215,37 +256,6 @@ function tl_actualites_views_default_views() {
     'created' => 'created',
   );
   $handler->display->display_options['defaults']['row_options'] = FALSE;
-  $handler->display->display_options['defaults']['fields'] = FALSE;
-  /* Champ: Contenu : Type d'Actualité */
-  $handler->display->display_options['fields']['field_news_type']['id'] = 'field_news_type';
-  $handler->display->display_options['fields']['field_news_type']['table'] = 'field_data_field_news_type';
-  $handler->display->display_options['fields']['field_news_type']['field'] = 'field_news_type';
-  $handler->display->display_options['fields']['field_news_type']['label'] = '';
-  $handler->display->display_options['fields']['field_news_type']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['field_news_type']['element_label_colon'] = FALSE;
-  /* Champ: Contenu : Titre */
-  $handler->display->display_options['fields']['title']['id'] = 'title';
-  $handler->display->display_options['fields']['title']['table'] = 'node';
-  $handler->display->display_options['fields']['title']['field'] = 'title';
-  $handler->display->display_options['fields']['title']['label'] = '';
-  $handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
-  $handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
-  /* Champ: Utilisateur : Nom */
-  $handler->display->display_options['fields']['name']['id'] = 'name';
-  $handler->display->display_options['fields']['name']['table'] = 'users';
-  $handler->display->display_options['fields']['name']['field'] = 'name';
-  $handler->display->display_options['fields']['name']['relationship'] = 'uid';
-  $handler->display->display_options['fields']['name']['label'] = 'Par ';
-  $handler->display->display_options['fields']['name']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['name']['link_to_user'] = FALSE;
-  /* Champ: Contenu : Date de publication */
-  $handler->display->display_options['fields']['created']['id'] = 'created';
-  $handler->display->display_options['fields']['created']['table'] = 'node';
-  $handler->display->display_options['fields']['created']['field'] = 'created';
-  $handler->display->display_options['fields']['created']['label'] = 'le ';
-  $handler->display->display_options['fields']['created']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['created']['date_format'] = 'custom';
-  $handler->display->display_options['fields']['created']['custom_date_format'] = 'd/m/Y';
   $handler->display->display_options['defaults']['filter_groups'] = FALSE;
   $handler->display->display_options['defaults']['filters'] = FALSE;
   /* Critère de filtrage: Contenu : Publié */
@@ -291,6 +301,16 @@ function tl_actualites_views_default_views() {
     t('.'),
     t('- '),
     t('par '),
+    t('<div class="news-title">
+  <div class="univers">[group_audience]</div>
+  <h2>[title]</h2>
+  <div class="comment-count">[comment_count]</div>
+  <div class="metadata">- [changed] par [name]</div>
+</div>'),
+    t('<div class="news-content">
+  <div class="picture">[field_picture]</div>
+  <div class="teaser">[body]</div>
+</div>'),
     t('Afficher les Univers : '),
     t('Liste (Page)'),
     t('plus'),
@@ -298,8 +318,6 @@ function tl_actualites_views_default_views() {
     t('%1'),
     t('Accueil (Bloc)'),
     t('Dernières Actualités'),
-    t('Par '),
-    t('le '),
   );
   $export['actualites'] = $view;
 
