@@ -5,3 +5,21 @@
  */
 
 include_once('tl_actualites.features.inc');
+
+/**
+ * Implements hook_entity_prepare_view().
+ *
+ * Use the link "type" as a CSS class for the link.
+ */
+function tl_actualites_entity_prepare_view($entities, $type, $langcode) {
+  if ($type == 'field_collection_item') {
+    foreach ($entities as $entity) {
+      if ($entity->field_name == 'field_news_links') {
+        $type = reset(field_get_items('field_collection_item', $entity, 'field_link_type'));
+
+        $flang = field_language('field_collection_item', $entity, 'field_link_link');
+        $entity->field_link_link[$flang][0]['attributes']['class'] = $type['value'];
+      }
+    }
+  }
+}
