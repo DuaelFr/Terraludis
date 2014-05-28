@@ -1,0 +1,103 @@
+<?php
+
+/**
+ * @file
+ * Provides formatter settings for limiting the number of values to display on
+ * multi-value fields.
+ *
+ * Based on Field Delimiter module (http://drupal.org/project/field_delimiter).
+ */
+
+define('FIELD_MULTIPLE_LIMIT_ALL', -1);
+
+/**
+ * Implements hook_field_formatter_info_alter().
+ */
+function field_multiple_limit_field_formatter_info_alter(&$info) {
+  // Added to all formatters.
+  foreach ($info as $formatter_key => &$formatter) {
+    $formatter['settings']['field_multiple_limit'] = FIELD_MULTIPLE_LIMIT_ALL;
+    $formatter['settings']['field_multiple_limit_offset'] = 0;
+  }
+}
+
+/**
+ * Implements hook_field_formatter_settings_summary_alter().
+ */
+function field_multiple_limit_field_formatter_settings_summary_alter(&$summary, $context) {
+  if ($context['field']['cardinality'] > 1 || $context['field']['cardinality'] == FIELD_CARDINALITY_UNLIMITED) {
+    $settings = $context['instance']['display'][$context['view_mode']]['settings'];
+
+    if (!empty($summary)) {
+      $summary .= '<br />';
+    }
+
+    if (!empty($settings['field_multiple_limit']) && $settings['field_multiple_limit'] != FIELD_MULTIPLE_LIMIT_ALL) {
+      $summary .= t('Displaying @limit values', array('@limit' => $settings['field_multiple_limit']));
+    }
+    else {
+      $summary .= t('Displaying all values');
+    }
+
+    if (!empty($settings['field_multiple_limit_offset'])) {
+      $summary .= '<br />' . t('Skipping the first @offset values', array('@offset' => $settings['field_multiple_limit_offset']));
+    }
+  }
+}
+
+/**
+ * Implements hook_field_formatter_settings_form_alter().
+ */
+function field_multiple_limit_field_formatter_settings_form_alter(&$settings_form, $context) {
+  if ($context['field']['cardinality'] > 1 || $context['field']['cardinality'] == FIELD_CARDINALITY_UNLIMITED) {
+    $settings = $context['instance']['display'][$context['view_mode']]['settings'];
+
+    $settings_form['field_multiple_limit'] = array(
+      '#type' => 'select',
+      '#title' => t('Number of values to display'),
+      '#options' => array(FIELD_MULTIPLE_LIMIT_ALL => t('All')) + drupal_map_assoc(range(1, 10)),
+      '#default_value' => $settings['field_multiple_limit'],
+    );
+
+    $settings_form['field_multiple_limit_offset'] = array(
+      '#type' => 'select',
+      '#title' => t('Number of values to skip'),
+      '#options' => drupal_map_assoc(range(0, 10)),
+      '#default_value' => $settings['field_multiple_limit_offset'],
+    );
+  }
+}
+
+/**
+ * Implements hook_field_attach_view_alter().
+ */
+function field_multiple_limit_field_attach_view_alter(&$output, $context) {
+  foreach (element_children($output) as $field_name) {
+
+    $entity_type = $output[$field_name]['#entity_type'];
+    $bundle      = $output[$field_name]['#bundle'];
+
+    $info = field_formatter_settings_get_instance_display_settings($entity_type, $field_name, $bundle, $context['view_mode']);
+
+    $limit = empty($info['field_multiple_limit']) ? FIELD_MULTIPLE_LIMIT_ALL : $info['field_multiple_limit'];
+    $offset = empty($info['field_multiple_limit_offset']) ? 0 : $info['field_multiple_limit_offset'];
+
+    if ($offset > 0 || ($limit != FIELD_MULTIPLE_LIMIT_ALL && $output[$field_name]['#items'] > $limit)) {
+      $element = &$output[$field_name];
+      $count = 1;
+      foreach ($element['#items'] as $delta => $item) {
+        if ($delta < $offset) {
+          $element[$delta]['#access'] = FALSE;
+          continue;
+        }
+        if ($limit != FIELD_MULTIPLE_LIMIT_ALL && $count > $limit) {
+          // @todo This is definitely not the best way to do that. Ideally we
+          // should alter the data in such way that no unwanted results are
+          // returned.
+          $element[$delta]['#access'] = FALSE;
+        }
+        $count++;
+      }
+    }
+  }
+}
