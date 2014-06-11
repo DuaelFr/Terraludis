@@ -1,0 +1,13 @@
+name = Feature Context Base
+description = Provide basic contextes
+core = 7.x
+package = App
+version = 7.x-1.0-alpha1
+project = feature_context_base
+dependencies[] = context
+dependencies[] = ctools
+features[context][] = all
+features[context][] = front
+features[context][] = not-front
+features[ctools][] = context:context:3
+features[features_api][] = api:1

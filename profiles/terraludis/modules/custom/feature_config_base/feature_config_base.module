@@ -1,0 +1,43 @@
+<?php
+/**
+ * @file
+ * Code for the Feature Config Base feature.
+ */
+
+include_once 'feature_config_base.features.inc';
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function feature_config_base_entity_info_alter(&$entity_info) {
+  $entity_info['node']['view modes']['list'] = array(
+    'label' => t('List'),
+    'custom settings' => TRUE,
+  );
+  $entity_info['node']['view modes']['home'] = array(
+    'label' => t('Home'),
+    'custom settings' => TRUE,
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function feature_config_base_menu() {
+  $items = array();
+
+  $items['frontpage'] = array(
+    'page callback' => '_feature_config_base_menu_frontpage',
+    'access callback' => TRUE,
+  );
+
+  return $items;
+}
+
+/**
+ * Page 'frontpage' callback.
+ */
+function _feature_config_base_menu_frontpage() {
+  drupal_set_title('');
+  return '';
+}

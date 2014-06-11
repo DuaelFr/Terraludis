@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Feature Config Locale feature.
+ */
+
+include_once 'feature_config_locale.features.inc';

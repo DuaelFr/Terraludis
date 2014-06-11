@@ -1,0 +1,88 @@
+<?php
+/**
+ * @file
+ * Code for the Feature Config Mails feature.
+ */
+
+include_once 'feature_config_mails.features.inc';
+
+/**
+ * Implements hook_menu().
+ */
+function feature_config_mails_menu() {
+  $items = array();
+
+  $items['admin/config/system/htmlmail/test-static'] = array(
+    'title' => 'Send static test',
+    'page callback' => '_feature_config_mails_test_static',
+    'access arguments' => array('administer mailsystem'),
+  );
+
+  return $items;
+}
+
+/**
+ * Send static test menu callback.
+ */
+function _feature_config_mails_test_static() {
+  drupal_mail('feature_config_mails', 'test_static', variable_get('feature_config_mails_debug_mail', ''), LANGUAGE_NONE);
+  return l('Send again', 'admin/config/system/htmlmail/test-static');
+}
+
+/**
+ * Implements hook_mail().
+ */
+function feature_config_mails_mail($key, &$message, $params) {
+  $tpl = DRUPAL_ROOT . '/' . drupal_get_path('module', 'feature_config_mails') . '/mailtest.tpl.php';
+  $message['subject'] = '[' . variable_get('site_name') . '] Static test';
+  $message['body'] = array(file_get_contents($tpl));
+}
+
+/**
+ * Implements hook_mail_alter().
+ */
+function feature_config_mails_mail_alter(&$message) {
+  if (variable_get('feature_config_mails_debug', FALSE)) {
+    $newto = variable_get('feature_config_mails_debug_mail', '');
+    if (!empty($newto)) {
+      $message['body'][] = 'DEBUG To: ' . $message['to'];
+      $message['old_to'] = $message['to'];
+      $message['to'] = $newto;
+    }
+    $newfrom = variable_get('feature_config_mails_debug_from', '');
+    if (!empty($newfrom)) {
+      $message['from'] = $newfrom;
+      $message['headers']['From'] = $newfrom;
+      $message['headers']['Sender'] = $newfrom;
+      $message['headers']['Return-Path'] = $newfrom;
+    }
+    $message['send'] = variable_get('feature_config_mails_debug_send', TRUE);
+    if (!drupal_is_cli() && module_exists('devel')) {
+      dpm($message);
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+//function feature_config_mails_preprocess_htmlmail(array &$variables) {
+//  $variables['user_picture'] = '';
+//
+//  $to = $variables['to'];
+//  if (variable_get('feature_config_mails_debug', FALSE)) {
+//    $to = $variables['old_to'];
+//  }
+//  $account = user_load_by_mail($to);
+//  if (!empty($account)) {
+//    $build = field_view_field('user', $account, 'field_picture', array(
+//      'label' => 'hidden',
+//      'type' => 'image',
+//      'settings' => array(
+//        'image_style' => 'user_medium',
+//        'image_link' => 'content',
+//      ),
+//    ));
+//    $variables['user_picture'] = drupal_render_children($build);
+//  }
+//}

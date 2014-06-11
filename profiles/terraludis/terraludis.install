@@ -1,0 +1,189 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the terraludis installation profile.
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * Performs actions to set up the site for this profile.
+ *
+ * @see system_install()
+ */
+function terraludis_install() {
+  // Allow visitors to register.
+  variable_set('user_register', USER_REGISTER_VISITORS);
+
+  // Give access to the published content to everyone.
+  user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array('access content'));
+  user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array('access content'));
+}
+
+/**
+ * Implements hook_install_tasks().
+ */
+function terraludis_install_tasks(&$install_state) {
+  $tasks = array();
+
+  $tasks['terraludis_install_theme'] = array(
+    'display_name' => st('Terraludis theme installation'),
+    'display' => TRUE,
+    'type' => 'normal',
+    'run' => INSTALL_TASK_RUN_IF_NOT_COMPLETED,
+    'function' => '_terraludis_install_theme',
+  );
+
+  $tasks['terraludis_install_locale'] = array(
+    'display_name' => st('Terraludis locale installation'),
+    'display' => TRUE,
+    'type' => 'batch',
+    'run' => INSTALL_TASK_RUN_IF_NOT_COMPLETED,
+    'function' => '_terraludis_install_locale',
+  );
+
+  $tasks['terraludis_install_variables'] = array(
+    'display_name' => st('Terraludis variables installation'),
+    'display' => TRUE,
+    'type' => 'normal',
+    'run' => INSTALL_TASK_RUN_IF_NOT_COMPLETED,
+    'function' => '_terraludis_install_variables',
+  );
+
+  $tasks['terraludis_install_user1'] = array(
+    'display_name' => st('Terraludis user1 installation'),
+    'display' => TRUE,
+    'type' => 'normal',
+    'run' => INSTALL_TASK_RUN_IF_NOT_COMPLETED,
+    'function' => '_terraludis_install_user1',
+  );
+
+  return $tasks;
+}
+
+/**
+ * Enable default and admin themes and hide all but system/main blocks to let
+ * context manage them.
+ */
+function _terraludis_install_theme() {
+  $settings = _terraludis_get_settings();
+  $theme_name = $settings['default_theme'];
+
+  // Set default theme.
+  theme_enable(array($theme_name));
+  theme_disable(array('bartik', 'garland', 'seven', 'stark'));
+  variable_set('theme_default', $theme_name);
+
+  // Set admin theme.
+  theme_enable(array('adminimal'));
+  variable_set('admin_theme', 'adminimal');
+  variable_set('node_admin_theme', TRUE);
+
+  // Disable all blocks by default except system-main. Use context to enable them.
+  db_update('block')
+    ->fields(array('region' => -1))
+    ->condition(
+      db_or()
+        ->condition('delta', 'main', '!=')
+        ->condition('module', 'system', '!=')
+    )
+    ->execute();
+}
+
+/**
+ * Enable french language and set it as default then disable other languages and
+ * download french translations.
+ */
+function _terraludis_install_locale(&$install_state) {
+  $settings = _terraludis_get_settings();
+  // If the default language is english we have nothing to do here.
+  if ($settings['default_language'] == 'en') {
+    return;
+  }
+
+  // Add french language if needed.
+  include_once DRUPAL_ROOT . '/includes/locale.inc';
+  $langs = language_list();
+  if (empty($langs[$settings['default_language']])) {
+    locale_add_language($settings['default_language']);
+    $langs = language_list();
+  }
+
+  // Enable french language and set it as default.
+  db_update('languages')
+    ->fields(array(
+      'enabled' => '1',
+    ))
+    ->condition('language', $settings['default_language'])
+    ->execute();
+  variable_set('language_default', (object) $langs[$settings['default_language']]);
+
+  // Disable all other languages.
+  db_update('languages')
+    ->fields(array(
+      'enabled' => '0',
+    ))
+    ->condition('language', $settings['default_language'], '<>')
+    ->execute();
+
+  // Reset languages static cache to avoid issues with l10n_update.
+  drupal_static_reset('language_list');
+
+  // Download french translations by using the l10n_update module batch.
+  module_enable(array('l10n_update'));
+  module_load_include('inc', 'l10n_update', 'l10n_update.check');
+  l10n_update_language_refresh(array($settings['default_language']));
+  $batch = batch_get();
+  // Disable l10n_update at the end of the process for performance reasons.
+  $batch['operations'][] = array('module_disable', array(array('l10n_update')));
+
+  return $batch;
+}
+
+/**
+ * Preset base configuration variables.
+ */
+function _terraludis_install_variables() {
+  $settings = _terraludis_get_settings();
+
+  variable_set('site_name',  $settings['site_name']);
+  variable_set('site_slogan',  $settings['site_slogan']);
+  variable_set('site_mail',  $settings['site_mail']);
+
+  variable_set('site_default_country',$settings['default_country']);
+  variable_set('date_default_timezone', $settings['default_timezone']);
+  variable_set('clean_url', 1);
+
+  variable_set('update_notify_emails', array($settings['site_mail']));
+  module_disable(array('update'));
+}
+
+/**
+ * Force user1 settings.
+ */
+function _terraludis_install_user1() {
+  $settings = _terraludis_get_settings();
+  $user1 = user_load(1);
+
+  $edit = array();
+  $edit['name'] = $settings['user1_name'];
+  $edit['mail'] = $settings['site_mail'];
+  $edit['pass'] = user_password(50); // Use drush to log in as user1.
+
+  user_save($user1, $edit);
+}
+
+/**
+ * Get settings from the profile's info file.
+ *
+ * @return array
+ *   The settings array.
+ */
+function _terraludis_get_settings() {
+  $settings = &drupal_static(__FUNCTION__, NULL);
+  if (empty($settings)) {
+    $data = drupal_parse_info_file(str_replace('.install', '.info', __FILE__));
+    $settings = $data['settings'];
+  }
+  return $settings;
+}

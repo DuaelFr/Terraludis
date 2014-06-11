@@ -1,0 +1,40 @@
+name = Terraludis
+description = Profil d'installation du site de Terraludis
+version = 7.x-1.0
+core = 7.x
+
+; Settings (see profile's hook_install_tasks)
+settings[default_country] = "FR"
+settings[default_language] = "fr"
+settings[default_theme] = "tl_corporate"
+settings[default_timezone] = "Europe/Paris"
+settings[site_mail] = "webmaster@terraludis.org"
+settings[site_name] = "Terra Ludis"
+settings[site_slogan] = "Association Ludique Montpelliéraine"
+settings[user1_name] = "webmaster"
+
+; Core dependencies
+dependencies[] = block
+dependencies[] = field
+dependencies[] = file
+dependencies[] = filter
+dependencies[] = image
+dependencies[] = locale
+dependencies[] = menu
+dependencies[] = node
+dependencies[] = path
+dependencies[] = system
+dependencies[] = user
+
+; Contrib dependencies
+dependencies[] = adminimal_admin_menu
+
+; Project dependencies
+dependencies[] = feature_config_base
+dependencies[] = feature_config_editors
+dependencies[] = feature_config_locale
+dependencies[] = feature_config_mails
+dependencies[] = feature_context_base
+
+; Development
+dependencies[] = feature_dev
