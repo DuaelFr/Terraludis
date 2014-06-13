@@ -6549,6 +6549,45 @@ function drupal_array_diff_assoc_recursive($array1, $array2) {
 }
 
 /**
+ * Inserts values into an array after a given key.
+ *
+ * Values from $insert_array are inserted after (or before) $key in $array. If
+ * $key is not found, $insert_array is appended to $array using array_merge().
+ *
+ * @param $array
+ *   The array to insert into. Passed by reference and altered in place.
+ * @param $key
+ *   The key of $array to insert after
+ * @param $insert_array
+ *   An array whose values should be inserted.
+ * @param $before
+ *   If TRUE, insert before the given key, rather than after it.
+ *   Defaults to inserting after.
+ */
+function drupal_array_insert(&$array, $key, $insert_array, $before = FALSE) {
+  $done = FALSE;
+  foreach ($array as $array_key => $array_val) {
+    if (!$before) {
+      $new_array[$array_key] = $array_val;
+    }
+    if ($array_key == $key && !$done) {
+      foreach ($insert_array as $insert_array_key => $insert_array_val) {
+        $new_array[$insert_array_key] = $insert_array_val;
+      }
+      $done = TRUE;
+    }
+    if ($before) {
+      $new_array[$array_key] = $array_val;
+    }
+  }
+  if (!$done) {
+    $new_array = array_merge($array, $insert_array);
+  }
+  // Put the new array in the place of the original.
+  $array = $new_array;
+}
+
+/**
  * Sets a value in a nested array with variable depth.
  *
  * This helper function should be used when the depth of the array element you
